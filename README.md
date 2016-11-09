@@ -1,0 +1,2 @@
+# dicore
+Minecraft Plugin Utilities
