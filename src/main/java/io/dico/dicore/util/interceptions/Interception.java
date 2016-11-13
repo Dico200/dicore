@@ -7,9 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Interception extends Command {
 
@@ -17,7 +15,7 @@ public class Interception extends Command {
         return commandMap != null;
     }
 
-    public static Interception register(String prefixLabel, String commandFor, InterceptionHandler handler) {
+    public static Interception register(String prefixLabel, String commandFor, InterceptionHandler handler, String... extraAliases) {
         if (commandMap == null) {
             throw new IllegalStateException("commandMap null, can't intercept");
         }
@@ -28,12 +26,15 @@ public class Interception extends Command {
         }
 
         Interception interception = new Interception(prefixLabel, commandFor, intercepted, handler);
-
-        new HashMap<>(commandMap).forEach((name, cmd) -> {
-            if (cmd == intercepted) {
-                commandMap.put(name, interception);
+        commandMap.entrySet().forEach(entry -> {
+            if (entry.getValue() == intercepted) {
+                entry.setValue(interception);
             }
         });
+        for (String extra : extraAliases) {
+            commandMap.put(extra, interception);
+        }
+
         return interception;
     }
 

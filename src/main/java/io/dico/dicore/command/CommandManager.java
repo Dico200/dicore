@@ -7,10 +7,11 @@ import org.bukkit.plugin.PluginManager;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 public class CommandManager {
 	
-	private static final CommandMap COMMAND_MAP;
+	private static final Map<String, org.bukkit.command.Command> COMMAND_MAP;
 	private static final Command ROOT;
 	private static String prefix;
 	
@@ -28,31 +29,44 @@ public class CommandManager {
 	}
 	
 	private static void dispatchToMap(Command command) {
-		assert COMMAND_MAP != null : new AssertionError("Command Map wasn't retrieved, unable to register commands!");
-		assert command != null : new AssertionError("Dispatched command is null!");
+		assert COMMAND_MAP != null : "Command Map wasn't retrieved, unable to register commands!";
+		assert command != null : "Dispatched command is null!";
 
 		InputHandler handler = new InputHandler(command, prefix);
 		String id = command.getId();
 
-		handler.setOther(COMMAND_MAP.getCommand(id));
-		COMMAND_MAP.register(id, handler);
+		org.bukkit.command.Command other = COMMAND_MAP.put(id, handler);
+		for (String alias : command.getAliases()) {
+			org.bukkit.command.Command overridden = COMMAND_MAP.put(alias, handler);
+			if (other == null) {
+				other = overridden;
+			}
+		}
+		if (other != null) {
+			handler.setOther(other);
+		}
 	}
 	
 	static {
 		
 		PluginManager pm = Bukkit.getPluginManager();
-		CommandMap map;
+		Map<String, org.bukkit.command.Command> map2;
 		try {
 			Field f = pm.getClass().getDeclaredField("commandMap");
 			f.setAccessible(true);
-			map = (CommandMap) f.get(pm);
-		} catch (IllegalArgumentException | IllegalAccessException | SecurityException | NoSuchFieldException e) {
+			CommandMap commandMap = (CommandMap) f.get(pm);
+
+			Field f2 = commandMap.getClass().getDeclaredField("knownCommands");
+			f2.setAccessible(true);
+			map2 = (Map<String, org.bukkit.command.Command>) f2.get(commandMap);
+
+		} catch (IllegalArgumentException | IllegalAccessException | SecurityException | NoSuchFieldException | NullPointerException | ClassCastException e) {
 			Bukkit.getLogger().severe("An error occured while retrieving the command map! See below.");
 			e.printStackTrace();
-			map = null;
+			map2 = null;
 		}
 		
-		COMMAND_MAP = map;
+		COMMAND_MAP = map2;
 		
 		ROOT = new Command() {
 

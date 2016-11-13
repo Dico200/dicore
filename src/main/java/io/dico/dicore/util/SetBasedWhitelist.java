@@ -1,13 +1,24 @@
 package io.dico.dicore.util;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
-public class WhitelistImpl implements Whitelist {
+class SetBasedWhitelist implements Whitelist {
 
     private final Set list;
     private final boolean blacklist;
 
-    public WhitelistImpl(Set list, boolean blacklist) {
+    SetBasedWhitelist(Object[] array, boolean blacklist) {
+        this(Arrays.asList(array), blacklist);
+    }
+
+    SetBasedWhitelist(Collection<Object> collection, boolean blacklist) {
+        this(new HashSet<>(collection), blacklist);
+    }
+
+    SetBasedWhitelist(Set<Object> list, boolean blacklist) {
         this.list = list;
         this.blacklist = blacklist;
     }

@@ -25,6 +25,14 @@ public class InputHandler extends org.bukkit.command.Command {
 		this.other = other;
 	}
 
+	public org.bukkit.command.Command getOther() {
+		return other;
+	}
+
+	public Command getParent() {
+		return parent;
+	}
+
 	@Override
 	public boolean execute(CommandSender sender, String label, String[] args) {
 		if (!takePriority && other != null)

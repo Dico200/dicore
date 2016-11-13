@@ -17,6 +17,13 @@ public class JsonFileAdapter<T> {
     private final Consumer<Throwable> onErrorLoad;
     private final Consumer<Throwable> onErrorSave;
 
+    public JsonFileAdapter(Type typeOfT, Gson gson, Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
+        this.typeOfT = typeOfT;
+        this.gson = gson;
+        this.onErrorLoad = onErrorLoad != null ? onErrorLoad : t -> {};
+        this.onErrorSave = onErrorSave != null ? onErrorSave : t -> {};
+    }
+
     public JsonFileAdapter(TypeToken<T> typeOfT, Gson gson, Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
         this.typeOfT = typeOfT.getType();
         this.gson = gson;
