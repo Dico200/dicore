@@ -35,10 +35,13 @@ public class JsonFileAdapter<T> {
         PrintWriter writer = null;
 
         try {
-            if (!file.exists()) file.createNewFile();
-            writer = new PrintWriter(file);
-            String json = gson.toJson(object);
-            writer.write(json);
+            if (file.exists() || file.createNewFile() || (file.getParentFile().mkdirs() && file.createNewFile())) {
+                writer = new PrintWriter(file);
+                String json = gson.toJson(object);
+                writer.write(json);
+            } else {
+                throw new IOException("Failed to create file " + file.getAbsolutePath());
+            }
         } catch (Throwable t) {
             onErrorSave.accept(t);
         } finally {

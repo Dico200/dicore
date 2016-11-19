@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 class InspectorTable {
 
-    private final Map<Class<? extends Event>, Map<Class, Function>> inspectors;
+    private final Map<Class<? extends Evddent>, Map<Class, Function>> inspectors;
 
     public <T extends Event, R> Function<T, R> get(Class<T> input, Class<R> output) {
 

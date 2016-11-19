@@ -16,7 +16,7 @@ import java.util.Set;
 
 public class DicoPlugin extends JavaPlugin implements Logging {
 
-    private String messagePrefix = Formatting.translateChars('&', "&c[&4" + getName() + "&c]&a");
+    private String messagePrefix = Formatting.translateChars('&', "&c[&4" + getName() + "&c]&a ");
     private final Set<Module> modules = new HashSet<>();
     private BukkitTask tickTask;
     private BukkitTask moduleTickTask;
@@ -108,10 +108,10 @@ public class DicoPlugin extends JavaPlugin implements Logging {
     // ----- FILE ADAPTERS -----
 
     protected <T> JsonFileAdapter<T> createFileAdapter(Type typeOfT, GsonBuilder gson) {
-        return new JsonFileAdapter<T>(typeOfT, gson.setPrettyPrinting().create(), this::error, this::error);
+        return new JsonFileAdapter<>(typeOfT, gson.setPrettyPrinting().create(), this::error, this::error);
     }
 
-    protected <T> JsonFileAdapter<T> createFileAdapter(Type typeOfT, TypeAdapter<T> typeTAdapter) {
+    protected <T> JsonFileAdapter<T> createFileAdapter(Type typeOfT, TypeAdapter<? super T> typeTAdapter) {
         return createFileAdapter(typeOfT, new GsonBuilder().registerTypeAdapter(typeOfT, typeTAdapter));
     }
 
