@@ -56,6 +56,10 @@ public class Reflection {
         return supplySafeIgnoreNullPointer(() -> getMethodNoCatch(clazz, methodName));
     }
 
+    public static Method getMethod(Object methodOwner, String methodName) {
+        return getMethod(methodOwner.getClass(), methodName);
+    }
+
     private static Field getFieldNoCatch(Class<?> clazz, String fieldName) throws NoSuchFieldException {
         final Field result = clazz.getDeclaredField(fieldName);
         result.setAccessible(true);
