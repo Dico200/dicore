@@ -17,7 +17,7 @@ public class InputHandler extends org.bukkit.command.Command {
 		super(parent.getId(), parent.getDescription(), new String(), parent.getAliases());
 		this.parent = parent;
 		this.other = null;
-		this.takePriority = false;
+		this.takePriority = true;
 		this.prefix = prefix;
 	}
 	
