@@ -42,9 +42,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.8</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/../IratusPvP-FactionsX-fork/debug/spigot-1.8.jar</systemPath>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -63,6 +61,11 @@
     </dependencies>
 
     <repositories>
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
         <repository>
             <id>trove-repo</id>
             <url>https://mvnrepository.com/artifact/net.sf.trove4j/trove4j/</url>
