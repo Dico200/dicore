@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-class SetBasedWhitelist implements Whitelist {
+public class SetBasedWhitelist implements Whitelist {
 
     private final Set list;
     private final boolean blacklist;
@@ -14,11 +14,11 @@ class SetBasedWhitelist implements Whitelist {
         this(Arrays.asList(array), blacklist);
     }
 
-    SetBasedWhitelist(Collection<Object> collection, boolean blacklist) {
+    SetBasedWhitelist(Collection collection, boolean blacklist) {
         this(new HashSet<>(collection), blacklist);
     }
 
-    SetBasedWhitelist(Set<Object> list, boolean blacklist) {
+    SetBasedWhitelist(Set list, boolean blacklist) {
         this.list = list;
         this.blacklist = blacklist;
     }
@@ -32,5 +32,13 @@ class SetBasedWhitelist implements Whitelist {
     public String toString() {
         return (blacklist ? "Blacklist" : "Whitelist") + "{"
                 + String.join(", ", (CharSequence[]) list.stream().map(String::valueOf).toArray(String[]::new)) + "}";
+    }
+    
+    public Set getList() {
+        return list;
+    }
+    
+    public boolean isBlacklist() {
+        return blacklist;
     }
 }

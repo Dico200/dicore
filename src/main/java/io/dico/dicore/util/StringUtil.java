@@ -37,5 +37,92 @@ public class StringUtil {
     public static String humanify(String input) {
         return input == null ? null : input.toLowerCase().replace('_', ' ');
     }
+    
+    public static String enumerate(String[] words) {
+        StringBuilder result = new StringBuilder();
+        int size = words.length;
+        int secondLastIndex = size - 2;
+        for (int i = 0; i < size; i++) {
+            String word = words[i];
+            if (word.isEmpty())
+                continue;
+            result.append(word);
+            if (i < secondLastIndex)
+                result.append(", ");
+            else if (i == secondLastIndex)
+                result.append(" and ");
+        }
+        return result.toString();
+    }
+    
+    public static String enumerate(String list, String regex) {
+        return enumerate(list.split(regex));
+    }
+    
+    public static String getTimeLength(long length) {
+        int minute = 60000; // in millis
+        int hour = 60*minute;
+        int day = 24*hour;
+        
+        int minutes = (int) ((length / minute) % 60);
+        int hours = (int) ((length / hour) % 24);
+        int days = (int) (length / day); //returns floor
+        
+        String result = ""; // It will be splitted at "|"
+        if (days != 0)
+            result += days + " days|";
+        if (hours != 0)
+            result += hours + " hours|";
+        if (minutes != 0)
+            result += minutes + " minutes|";
+        return enumerate(result, "|");
+    }
+    
+    public static long getTimeLength(String input) { //if -1: error
+        char[] chars = input.toCharArray();
+        long count = 0;
+        int i = 0;
+        while (i < input.length()) {
+            int num = 0;
+            char unit = '\0';
+            boolean negate;
+            if (negate = chars[i] == '-') {
+                i++;
+            }
+            do {
+                char c = chars[i];
+                try {
+                    num = Integer.parseInt(Character.toString(c)) + 10 * num;
+                } catch (NumberFormatException e) {
+                    unit = c;
+                    i++;
+                    break;
+                }
+                i++;
+            } while (i < input.length());
+            
+            long unitTime = getUnitTime(unit);
+            if (unitTime == -1)
+                throw new IllegalArgumentException();
+            if (negate) {
+                unitTime = -unitTime;
+            }
+            count += (num * unitTime);
+        }
+        return count;
+    }
+    
+    public static long getUnitTime(char unit) { //if -1: no value found
+        switch (Character.toLowerCase(unit)) {
+            case 'm':
+                return 60000;
+            case 'h':
+                return 3600000;
+            case 'd':
+                return 86400000;
+            default:
+                return -1;
+        }
+    }
 
 }

@@ -37,6 +37,10 @@ public class Interception extends Command {
 
         return interception;
     }
+    
+    public static Map<String, Command> getCommandMap() {
+        return commandMap;
+    }
 
     private static final Map<String, Command> commandMap;
 
