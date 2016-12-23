@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import io.dico.dicore.command.Formatting;
 import io.dico.dicore.saving.JsonFileAdapter;
+import io.dico.dicore.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;

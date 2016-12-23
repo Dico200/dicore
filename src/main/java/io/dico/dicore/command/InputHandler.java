@@ -74,6 +74,7 @@ public class InputHandler extends org.bukkit.command.Command {
 
 	private void setTimingsIfNecessary() {
 		// with paper spigot, the timings are not set by super constructor but by CommandMap.register(), which is not invoked for this system
+		// I use reflection so that the project does not require paper spigot to build
 		try {
 			Field field = getClass().getField("timings");
 			if (field.get(this) != null) return;

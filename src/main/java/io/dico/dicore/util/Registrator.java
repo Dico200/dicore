@@ -23,22 +23,38 @@ public class Registrator implements Listener {
 
     public Registrator(Plugin plugin) {
         this.plugin = plugin;
+        if (plugin.isEnabled()) {
+            setEnabled(true);
+        }
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
     }
 
     @EventHandler
     public void onPluginEnable(PluginEnableEvent event) {
-        enabled = true;
         if (event.getPlugin() == plugin) {
-            reregisterAll();
+            setEnabled(true);
         }
     }
 
     @EventHandler
     public void onPluginDisable(PluginDisableEvent event) {
-        enabled = false;
         if (event.getPlugin() == plugin) {
-            unregisterAll();
+            setEnabled(false);
+        }
+    }
+
+    private void setEnabled(boolean enabled) {
+        if (this.enabled != enabled) {
+            this.enabled = enabled;
+            if (enabled) {
+                reregisterAll();
+            } else {
+                unregisterAll();
+            }
         }
     }
 
@@ -99,18 +115,23 @@ public class Registrator implements Listener {
         while (checkedClass != Event.class && Event.class.isAssignableFrom(checkedClass)) {
             try {
                 m = checkedClass.getDeclaredMethod("getHandlerList");
+                break;
             } catch (NoSuchMethodException ignored) {
             }
             checkedClass = checkedClass.getSuperclass();
         }
 
         try {
+            if (m == null) {
+                throw new NullPointerException();
+            }
+            if (!m.isAccessible()) {
+                m.setAccessible(true);
+            }
             return (HandlerList) m.invoke(null);
         } catch (InvocationTargetException | IllegalAccessException | NullPointerException | ClassCastException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Failed to get HandlerList of " + eventClass.getCanonicalName(), e);
         }
-
-        throw new IllegalArgumentException("Failed to get HandlerList of " + eventClass.getCanonicalName());
     }
 
     public void unregisterAll() {

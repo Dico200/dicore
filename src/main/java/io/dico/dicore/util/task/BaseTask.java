@@ -3,17 +3,19 @@ package io.dico.dicore.util.task;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
-public abstract class BaseTask<T> implements Runnable {
+import java.util.NoSuchElementException;
+
+public abstract class BaseTask<T> {
 
     private boolean running = false;
 
     private Integer taskId = null;
-    private long workTime = 20;
+    private long workTime;
 
     public void start(Plugin plugin, long delay, long period, long workTime) {
         this.workTime = workTime;
         running = true;
-        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, delay, period);
+        taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::run, delay, period);
     }
 
     public void start(Plugin plugin) {
@@ -25,9 +27,7 @@ public abstract class BaseTask<T> implements Runnable {
 
     protected abstract boolean process(T object);
 
-    @Override
-    public void run() {
-        if (taskId == null) return;
+    private void run() {
         final long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < workTime && processNext()) ;
     }
@@ -36,7 +36,7 @@ public abstract class BaseTask<T> implements Runnable {
         return running;
     }
 
-    protected abstract T supply();
+    protected abstract T supply() throws NoSuchElementException;
 
     private void cancelTask(boolean early) {
         Bukkit.getScheduler().cancelTask(taskId);
@@ -45,8 +45,10 @@ public abstract class BaseTask<T> implements Runnable {
     }
 
     private boolean processNext() {
-        final T object = supply();
-        if (object == null) {
+        T object;
+        try {
+            object = supply();
+        } catch (NoSuchElementException e) {
             cancelTask(false);
             return false;
         }

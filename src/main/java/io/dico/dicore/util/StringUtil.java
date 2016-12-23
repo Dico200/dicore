@@ -1,5 +1,7 @@
 package io.dico.dicore.util;
 
+import io.dico.dicore.command.Formatting;
+
 public class StringUtil {
 
     /**
@@ -123,6 +125,22 @@ public class StringUtil {
             default:
                 return -1;
         }
+    }
+
+    public static String replaceKeepColours(String target, String toReplace, String with) {
+        int index = -toReplace.length();
+        while ((index = target.indexOf(toReplace, index + toReplace.length())) != -1) {
+            String start = target.substring(0, index);
+            Formatting coloursBefore = Formatting.getFormats(start);
+            String after;
+            try {
+                after = target.substring(index + toReplace.length());
+            } catch (IndexOutOfBoundsException e) {
+                after = "";
+            }
+            target = start + with + coloursBefore + after;
+        }
+        return target;
     }
 
 }

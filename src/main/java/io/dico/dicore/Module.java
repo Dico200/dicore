@@ -1,5 +1,6 @@
 package io.dico.dicore;
 
+import io.dico.dicore.util.Logging;
 import io.dico.dicore.util.exceptions.Exceptions;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;

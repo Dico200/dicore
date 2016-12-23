@@ -1,4 +1,4 @@
-package io.dico.dicore.util;
+package io.dico.dicore.util.generator;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -7,8 +7,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
-public class Generator<T> implements Iterable<T>, Iterator<T> {
-    private static final ThreadLocal<Generator> generatorLocal = new ThreadLocal<>();
+public class LegacyGenerator<T> implements Iterable<T>, Iterator<T> {
+    private static final ThreadLocal<LegacyGenerator> generatorLocal = new ThreadLocal<>();
     private static final ThreadGroup threadGroup = new ThreadGroup("Generators");
     private final Runnable function;
     private final Thread thread;
@@ -20,7 +20,7 @@ public class Generator<T> implements Iterable<T>, Iterator<T> {
     private final Condition nextCondition = lock.newCondition();
     private final Condition valueCondition = lock.newCondition();
     
-    public Generator(Runnable function) {
+    public LegacyGenerator(Runnable function) {
         this.function = function;
         this.thread = new Thread(threadGroup, this::run);
         lock.lock();
@@ -39,6 +39,7 @@ public class Generator<T> implements Iterable<T>, Iterator<T> {
             function.run();
         } finally {
             hasNext = false;
+            valueCondition.signal();
             lock.unlock();
         }
     }
@@ -76,12 +77,12 @@ public class Generator<T> implements Iterable<T>, Iterator<T> {
         return this;
     }
     
-    public static <T, A> Generator<T> generator(Consumer<A> function, A argument) {
+    public static <T, A> LegacyGenerator<T> generator(Consumer<A> function, A argument) {
         return generator(() -> function.accept(argument));
     }
     
-    public static <T> Generator<T> generator(Runnable function) {
-        return new Generator<>(function);
+    public static <T> LegacyGenerator<T> generator(Runnable function) {
+        return new LegacyGenerator<>(function);
     }
     
     @SuppressWarnings("unchecked")

@@ -127,6 +127,10 @@ public class BlockPos implements Comparable<BlockPos> {
                 '}';
     }
 
+    public String pos() {
+        return String.format("%s(%d,%d,%d)", worldName, x, y, z);
+    }
+
     @Override
     public int compareTo(BlockPos o) {
         return o.worldName.hashCode() - worldName.hashCode();

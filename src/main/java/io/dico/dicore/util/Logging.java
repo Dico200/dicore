@@ -1,8 +1,8 @@
-package io.dico.dicore;
+package io.dico.dicore.util;
 
 import java.util.logging.Logger;
 
-interface Logging {
+public interface Logging {
 
     void error(Object o);
 
