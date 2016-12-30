@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.function.Supplier;
 
 public interface NBTList extends List<Object> {
     NBTType getElementType();
@@ -16,17 +17,43 @@ public interface NBTList extends List<Object> {
 
     NBTMap getMap(int index, NBTMap absent);
 
+    NBTMap getMap(int index, Supplier<NBTMap> absent);
+
+    default NBTMap getPresentMap(int index) {
+        return getPresentMap(index, NBTType::newNBTMap);
+    }
+
+    NBTMap getPresentMap(int index, NBTMap absent);
+
+    NBTMap getPresentMap(int index, Supplier<NBTMap> absent);
+
+    default NBTList getPresentList(int index) {
+        return getPresentList(index, NBTType::newNBTList);
+    }
+
+    NBTList getPresentList(int index, NBTList absent);
+
+    NBTList getPresentList(int index, Supplier<NBTList> absent);
+
     default NBTList getList(int index) {
         return getList(index, EMPTY);
     }
 
     NBTList getList(int index, NBTList absent);
 
+    NBTList getList(int index, Supplier<NBTList> absent);
+
     default int[] getIntArray(int index) {
         return getIntArray(index, new int[0]);
     }
 
     int[] getIntArray(int index, int[] absent);
+
+    default byte[] getByteArray(int index) {
+        return getByteArray(index, new byte[0]);
+    }
+
+    byte[] getByteArray(int index, byte[] absent);
 
     default double getDouble(int index) {
         return getDouble(index, 0D);
@@ -202,6 +229,11 @@ public interface NBTList extends List<Object> {
         }
 
         @Override
+        public byte[] getByteArray(int index, byte[] absent) {
+            return absent;
+        }
+
+        @Override
         public double getDouble(int index, double absent) {
             return absent;
         }
@@ -239,6 +271,36 @@ public interface NBTList extends List<Object> {
         @Override
         public byte getByte(int index, int absent) {
             return (byte) absent;
+        }
+
+        @Override
+        public NBTMap getPresentMap(int index, NBTMap absent) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NBTMap getPresentMap(int index, Supplier<NBTMap> absent) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NBTList getPresentList(int index, NBTList absent) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NBTList getPresentList(int index, Supplier<NBTList> absent) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NBTMap getMap(int index, Supplier<NBTMap> absent) {
+            return absent.get();
+        }
+
+        @Override
+        public NBTList getList(int index, Supplier<NBTList> absent) {
+            return absent.get();
         }
     };
 }

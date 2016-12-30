@@ -9,7 +9,9 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class NBTMapImpl implements NBTMap {
 
@@ -189,6 +191,88 @@ public class NBTMapImpl implements NBTMap {
             return result == null ? absent : result;
         } catch (ClassCastException e) {
             return absent;
+        }
+    }
+
+    @Override
+    public NBTMap getMap(Object key, Supplier<NBTMap> absent) {
+        Objects.requireNonNull(absent);
+        try {
+            NBTMap result = (NBTMap) get(key);
+            return result == null ? absent.get() : result;
+        } catch (ClassCastException e) {
+            return absent.get();
+        }
+    }
+
+    @Override
+    public NBTMap getPresentMap(Object key, NBTMap absent) {
+        Objects.requireNonNull(absent);
+        NBTMap result = null;
+        try {
+            result = (NBTMap) get(key);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent;
+            put((String) key, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTMap getPresentMap(Object key, Supplier<NBTMap> absent) {
+        Objects.requireNonNull(absent);
+        NBTMap result = null;
+        try {
+            result = (NBTMap) get(key);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent.get();
+            put((String) key, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTList getPresentList(Object key, NBTList absent) {
+        Objects.requireNonNull(absent);
+        NBTList result = null;
+        try {
+            result = (NBTList) get(key);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent;
+            put((String) key, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTList getPresentList(Object key, Supplier<NBTList> absent) {
+        Objects.requireNonNull(absent);
+        NBTList result = null;
+        try {
+            result = (NBTList) get(key);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent.get();
+            put((String) key, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTList getList(Object key, Supplier<NBTList> absent) {
+        Objects.requireNonNull(absent);
+        try {
+            NBTList result = (NBTList) get(key);
+            return result == null ? absent.get() : result;
+        } catch (ClassCastException e) {
+            return absent.get();
         }
     }
 

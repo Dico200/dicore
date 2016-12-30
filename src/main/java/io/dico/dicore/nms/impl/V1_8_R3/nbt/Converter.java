@@ -1,5 +1,7 @@
 package io.dico.dicore.nms.impl.V1_8_R3.nbt;
 
+import io.dico.dicore.nms.nbt.NBTList;
+import io.dico.dicore.nms.nbt.NBTMap;
 import io.dico.dicore.nms.nbt.NBTType;
 import net.minecraft.server.v1_8_R3.*;
 
@@ -96,9 +98,21 @@ public final class Converter {
             case INT_ARRAY:
                 return new NBTTagIntArray((int[]) object);
             case LIST:
-                return ((NBTListImpl) object).list;
+                if (object == NBTList.EMPTY) {
+                    return new NBTTagList();
+                }
+                if (object instanceof NBTListImpl) {
+                    return ((NBTListImpl) object).list;
+                }
+                throw new IllegalArgumentException();
             case MAP:
-                return ((NBTMapImpl) object).base;
+                if (object == NBTMap.EMPTY) {
+                    return new NBTTagCompound();
+                }
+                if (object instanceof NBTMapImpl) {
+                    return ((NBTMapImpl) object).base;
+                }
+                throw new IllegalArgumentException();
             default:
                 return null;
         }

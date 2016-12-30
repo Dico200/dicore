@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public interface NBTMap extends Map<String, Object> {
 
@@ -13,17 +14,43 @@ public interface NBTMap extends Map<String, Object> {
 
     NBTMap getMap(Object key, NBTMap absent);
 
+    NBTMap getMap(Object key, Supplier<NBTMap> absent);
+
+    default NBTMap getPresentMap(Object key) {
+        return getPresentMap(key, NBTType::newNBTMap);
+    }
+
+    NBTMap getPresentMap(Object key, NBTMap absent);
+
+    NBTMap getPresentMap(Object key, Supplier<NBTMap> absent);
+
     default NBTList getList(Object key) {
         return getList(key, NBTList.EMPTY);
     }
 
     NBTList getList(Object key, NBTList absent);
 
+    NBTList getList(Object key, Supplier<NBTList> absent);
+
+    default NBTList getPresentList(Object key) {
+        return getPresentList(key, NBTType::newNBTList);
+    }
+
+    NBTList getPresentList(Object key, NBTList absent);
+
+    NBTList getPresentList(Object key, Supplier<NBTList> absent);
+
     default int[] getIntArray(Object key) {
         return getIntArray(key, new int[0]);
     }
 
     int[] getIntArray(Object key, int[] absent);
+
+    default byte[] getByteArray(Object key) {
+        return getByteArray(key, new byte[0]);
+    }
+
+    byte[] getByteArray(Object key, byte[] absent);
 
     default double getDouble(Object key) {
         return getDouble(key, 0D);
@@ -60,12 +87,6 @@ public interface NBTMap extends Map<String, Object> {
     }
 
     byte getByte(Object key, int absent);
-
-    default byte[] getByteArray(Object key) {
-        return getByteArray(key, new byte[0]);
-    }
-
-    byte[] getByteArray(Object key, byte[] absent);
 
     NBTMap EMPTY = new NBTMap() {
         @Override
@@ -176,6 +197,36 @@ public interface NBTMap extends Map<String, Object> {
         @Override
         public byte[] getByteArray(Object key, byte[] absent) {
             return absent;
+        }
+
+        @Override
+        public NBTMap getMap(Object key, Supplier<NBTMap> absent) {
+            return absent.get();
+        }
+
+        @Override
+        public NBTMap getPresentMap(Object key, NBTMap absent) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NBTMap getPresentMap(Object key, Supplier<NBTMap> absent) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NBTList getList(Object key, Supplier<NBTList> absent) {
+            return absent.get();
+        }
+
+        @Override
+        public NBTList getPresentList(Object key, NBTList absent) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NBTList getPresentList(Object key, Supplier<NBTList> absent) {
+            throw new UnsupportedOperationException();
         }
     };
 }

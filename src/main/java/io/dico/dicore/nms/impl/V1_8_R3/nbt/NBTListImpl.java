@@ -6,6 +6,7 @@ import io.dico.dicore.nms.nbt.NBTType;
 import net.minecraft.server.v1_8_R3.*;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class NBTListImpl extends AbstractList<Object> implements NBTList {
 
@@ -55,6 +56,7 @@ public class NBTListImpl extends AbstractList<Object> implements NBTList {
 
     @Override
     public NBTMap getMap(int index, NBTMap absent) {
+        Objects.requireNonNull(absent);
         try {
             NBTMap result = (NBTMap) get(index);
             return result == null ? absent : result;
@@ -65,6 +67,7 @@ public class NBTListImpl extends AbstractList<Object> implements NBTList {
 
     @Override
     public NBTList getList(int index, NBTList absent) {
+        Objects.requireNonNull(absent);
         try {
             NBTList result = (NBTList) get(index);
             return result == null ? absent : result;
@@ -75,8 +78,20 @@ public class NBTListImpl extends AbstractList<Object> implements NBTList {
 
     @Override
     public int[] getIntArray(int index, int[] absent) {
+        Objects.requireNonNull(absent);
         try {
             int[] result = (int[]) get(index);
+            return result == null ? absent : result;
+        } catch (ClassCastException e) {
+            return absent;
+        }
+    }
+
+    @Override
+    public byte[] getByteArray(int index, byte[] absent) {
+        Objects.requireNonNull(absent);
+        try {
+            byte[] result = (byte[]) get(index);
             return result == null ? absent : result;
         } catch (ClassCastException e) {
             return absent;
@@ -105,6 +120,7 @@ public class NBTListImpl extends AbstractList<Object> implements NBTList {
 
     @Override
     public String getString(int index, String absent) {
+        Objects.requireNonNull(absent);
         try {
             String result = (String) get(index);
             return result == null ? absent : result;
@@ -153,4 +169,85 @@ public class NBTListImpl extends AbstractList<Object> implements NBTList {
         }
     }
 
+    @Override
+    public NBTMap getMap(int index, Supplier<NBTMap> absent) {
+        Objects.requireNonNull(absent);
+        try {
+            NBTMap result = (NBTMap) get(index);
+            return result == null ? absent.get() : result;
+        } catch (ClassCastException e) {
+            return absent.get();
+        }
+    }
+
+    @Override
+    public NBTMap getPresentMap(int index, NBTMap absent) {
+        Objects.requireNonNull(absent);
+        NBTMap result = null;
+        try {
+            result = (NBTMap) get(index);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent;
+            set(index, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTMap getPresentMap(int index, Supplier<NBTMap> absent) {
+        Objects.requireNonNull(absent);
+        NBTMap result = null;
+        try {
+            result = (NBTMap) get(index);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent.get();
+            set(index, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTList getPresentList(int index, NBTList absent) {
+        Objects.requireNonNull(absent);
+        NBTList result = null;
+        try {
+            result = (NBTList) get(index);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent;
+            set(index, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTList getPresentList(int index, Supplier<NBTList> absent) {
+        Objects.requireNonNull(absent);
+        NBTList result = null;
+        try {
+            result = (NBTList) get(index);
+        } catch (ClassCastException ignored) {
+        }
+        if (result == null) {
+            result = absent.get();
+            set(index, result);
+        }
+        return result;
+    }
+
+    @Override
+    public NBTList getList(int index, Supplier<NBTList> absent) {
+        Objects.requireNonNull(absent);
+        try {
+            NBTList result = (NBTList) get(index);
+            return result == null ? absent.get() : result;
+        } catch (ClassCastException e) {
+            return absent.get();
+        }
+    }
 }
