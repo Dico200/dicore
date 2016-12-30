@@ -2,22 +2,23 @@ package io.dico.dicore.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import static io.dico.dicore.util.exceptions.Exceptions.runSafeIgnoreNullPointer;
 import static io.dico.dicore.util.exceptions.Exceptions.supplySafeIgnoreNullPointer;
 
 public class Reflection {
 
-    public static Object getValueInField(Object fieldOwner, String fieldName) {
-        return supplySafeIgnoreNullPointer(() -> getFieldNoCatch(fieldOwner.getClass(), fieldName).get(fieldOwner));
+    public static <T> T getValueInField(Object fieldOwner, String fieldName) {
+        return supplySafeIgnoreNullPointer(() -> (T) getFieldNoCatch(fieldOwner.getClass(), fieldName).get(fieldOwner));
     }
 
-    public static Object getValueInField(Class<?> clazz, String fieldName, Object instance) {
-        return supplySafeIgnoreNullPointer(() -> getFieldNoCatch(clazz, fieldName).get(instance));
+    public static <T> T getValueInField(Class<?> clazz, String fieldName, Object instance) {
+        return supplySafeIgnoreNullPointer(() -> (T) getFieldNoCatch(clazz, fieldName).get(instance));
     }
 
-    public static Object getValueInField(Field field, Object instance) {
-        return supplySafeIgnoreNullPointer(() -> field.get(instance));
+    public static <T> T getValueInField(Field field, Object instance) {
+        return supplySafeIgnoreNullPointer(() -> (T) field.get(instance));
     }
 
     public static Field getField(Object fieldOwner, String fieldName) {
@@ -27,6 +28,18 @@ public class Reflection {
     public static Field getField(Class<?> clazz, String fieldName) {
         return supplySafeIgnoreNullPointer(() -> getFieldNoCatch(clazz, fieldName));
     }
+
+    public static void setValueInFinalField(Field f, Object owner, Object newValue) {
+        runSafeIgnoreNullPointer(() -> {
+            Field modifiersField = getFieldNoCatch(Field.class, "modifiers");
+            modifiersField.setAccessible(true);
+            int modifiers = getValueInField(modifiersField, f);
+            modifiers -= modifiers & Modifier.FINAL;
+            setValueInField(modifiersField, f, modifiers);
+        });
+    }
+
+
 
     public static void setValueInField(Object fieldOwner, String fieldName, Object newValue) {
         runSafeIgnoreNullPointer(() -> getFieldNoCatch(fieldOwner.getClass(), fieldName).set(fieldOwner, newValue));

@@ -176,7 +176,7 @@ public abstract class Command extends Hierarchy<Command> {
 	
 	/**
 	 * The aliases for the command. Defaults to none
-	 * @default empty List<String>
+	 * @default empty NBTListImpl<String>
 	 */
 	protected final void setAliases(String... aliases) {
 		this.aliases = Arrays.asList(aliases);

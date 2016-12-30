@@ -15,7 +15,7 @@ public class SetBasedWhitelist implements Whitelist {
     }
 
     SetBasedWhitelist(Collection collection, boolean blacklist) {
-        this(new HashSet<>(collection), blacklist);
+        this(new HashSet(collection), blacklist);
     }
 
     SetBasedWhitelist(Set list, boolean blacklist) {

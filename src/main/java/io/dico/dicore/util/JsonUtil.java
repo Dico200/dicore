@@ -210,32 +210,3 @@ public class JsonUtil {
 
 }
 
-abstract class JsonSpecificTokenAdapter<T, U> {
-
-    private final String key;
-    private final Class<U> clazz;
-    //private final Consumer<T> consumer;
-    //private final Function<T, ?> function;
-
-    public JsonSpecificTokenAdapter(String key, Class<U> clazz) {
-        this.key = key;
-        this.clazz = clazz;
-    }
-
-    public void deserialize(Map<String, Object> map, T instanceFor) {
-        Object o = map.get(key);
-        if (o != null) try {
-            insert(clazz.cast(o), instanceFor);
-        } catch (Exception ignored) {
-        }
-    }
-
-    abstract void insert(U thing, T instanceInto);
-
-    public void serialize(Map<String, Object> map, T instanceOf) {
-        map.put(key, get(instanceOf));
-    }
-
-    abstract U get(T instanceFrom);
-
-}

@@ -13,7 +13,8 @@ public class BooleanBox {
 
     @Override
     public String toString() {
-        return "BooleanBox(" + String.valueOf(value) + ')';
+        return "BooleanBox{" +
+                "value=" + value +
+                '}';
     }
-
 }

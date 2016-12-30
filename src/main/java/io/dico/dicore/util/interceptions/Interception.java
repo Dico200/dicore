@@ -6,8 +6,10 @@ import io.dico.dicore.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.plugin.PluginManager;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class Interception extends Command {
 
@@ -121,7 +123,7 @@ public class Interception extends Command {
     }
 
     static {
-        commandMap = (Map<String, Command>) Reflection.getValueInField(Reflection.getValueInField(
+        commandMap = (Map<String, Command>) Reflection.getValueInField(Reflection.<PluginManager>getValueInField(
                 Bukkit.getPluginManager(), "commandMap"), "knownCommands");
     }
 
