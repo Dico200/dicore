@@ -8,21 +8,21 @@ import net.minecraft.server.v1_8_R3.*;
 import java.util.*;
 import java.util.function.Supplier;
 
-public class NBTListImpl extends AbstractList<Object> implements NBTList {
+public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
 
     public final NBTTagList list;
 
-    public NBTListImpl(NBTTagList list) {
+    public NBTList_V1_8_R3(NBTTagList list) {
         this.list = list;
     }
 
-    public NBTListImpl() {
+    public NBTList_V1_8_R3() {
         this(new NBTTagList());
     }
 
     @Override
     public Object get(int index) {
-        return Converter.fromNMS(list.g(index));
+        return Converter_V1_8_R3.fromNMS(list.g(index));
     }
 
     @Override
@@ -33,25 +33,25 @@ public class NBTListImpl extends AbstractList<Object> implements NBTList {
     @Override
     public boolean add(Object o) {
         int size = list.size();
-        list.add(Converter.toNMS(o));
+        list.add(Converter_V1_8_R3.toNMS(o));
         return list.size() != size;
     }
 
     @Override
     public Object set(int index, Object element) {
         Object previous = get(index);
-        list.a(index, Converter.toNMS(element));
+        list.a(index, Converter_V1_8_R3.toNMS(element));
         return previous;
     }
 
     @Override
     public Object remove(int index) {
-        return Converter.fromNMS(list.a(index));
+        return Converter_V1_8_R3.fromNMS(list.a(index));
     }
 
     @Override
     public NBTType getElementType() {
-        return Converter.getElementType(list.f());
+        return Converter_V1_8_R3.getElementType(list.f());
     }
 
     @Override

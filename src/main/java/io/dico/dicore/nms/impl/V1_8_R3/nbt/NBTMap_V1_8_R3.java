@@ -13,18 +13,18 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class NBTMapImpl implements NBTMap {
+public class NBTMap_V1_8_R3 implements NBTMap {
 
     public final NBTTagCompound base;
     private final Map<String, Object> map;
 
-    public NBTMapImpl(NBTTagCompound base) {
+    public NBTMap_V1_8_R3(NBTTagCompound base) {
         this.base = base;
         Map<String, NBTBase> map = Reflection.getValueInField(NBTTagCompound.class, "map", base);
-        this.map = Maps.transformValues(map, Converter::fromNMS);
+        this.map = Maps.transformValues(map, Converter_V1_8_R3::fromNMS);
     }
 
-    public NBTMapImpl() {
+    public NBTMap_V1_8_R3() {
         this(new NBTTagCompound());
     }
 
@@ -56,7 +56,7 @@ public class NBTMapImpl implements NBTMap {
     @Override
     public Object put(String key, Object value) {
         Object previous = get(key);
-        base.set(key, Converter.toNMS(value));
+        base.set(key, Converter_V1_8_R3.toNMS(value));
         return previous;
     }
 

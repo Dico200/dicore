@@ -3,6 +3,7 @@ package io.dico.dicore;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import io.dico.dicore.command.Formatting;
+import io.dico.dicore.nms.NDriver;
 import io.dico.dicore.saving.fileadapter.GsonFileAdapter;
 import io.dico.dicore.util.Logging;
 import org.bukkit.Bukkit;
@@ -22,6 +23,16 @@ public class DicoPlugin extends JavaPlugin implements Logging {
     private BukkitTask tickTask;
     private BukkitTask moduleTickTask;
     private boolean debugging = false;
+    private final boolean usesNMS;
+
+    public DicoPlugin() {
+        usesNMS = false;
+    }
+
+    public DicoPlugin(boolean usesNMS) {
+        this.usesNMS = usesNMS;
+
+    }
 
     // ----- LOGGING -----
 
@@ -200,9 +211,21 @@ public class DicoPlugin extends JavaPlugin implements Logging {
         disable();
     }
 
+    private boolean testNMS() {
+        if (usesNMS) {
+            try {
+                NDriver.getInstance();
+            } catch (Exception e) {
+                error("Your server version is not supported thoroughly by this version of Dicore.");
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public final void onEnable() {
-        if (!preEnable()) {
+        if (!preEnable() || !testNMS()) {
             getLogger().severe("An error occurred whilst enabling plugin " + getName() +" !");
             getServer().getPluginManager().disablePlugin(this);
             return;

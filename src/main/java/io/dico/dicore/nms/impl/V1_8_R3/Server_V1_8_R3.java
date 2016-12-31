@@ -8,10 +8,10 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 
-public class ServerImpl implements NServer {
+public class Server_V1_8_R3 implements NServer {
     private final DedicatedServer mserver = (DedicatedServer) MinecraftServer.getServer();
     private final CraftServer bserver = mserver.server;
-    private final NProperties properties = new PropertiesImpl(mserver.propertyManager);
+    private final NProperties properties = new Properties_V1_8_R3(mserver.propertyManager);
 
     @Override
     public int getCurrentTick() {

@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class CreatureEquipmentImpl implements NCreatureEquipment {
+public class CreatureEquipment_V1_8_R3 implements NCreatureEquipment {
 
     private static final ItemStack NOT_SET = new ItemStack(Material.AIR);
 
@@ -27,12 +27,12 @@ public class CreatureEquipmentImpl implements NCreatureEquipment {
     private final EntityInsentient entity;
     private final ItemStack[] cache = new ItemStack[5];
 
-    public CreatureEquipmentImpl(EntityInsentient entity) {
+    public CreatureEquipment_V1_8_R3(EntityInsentient entity) {
         this.entity = entity;
         refreshCache();
     }
 
-    public CreatureEquipmentImpl(Creature creature) {
+    public CreatureEquipment_V1_8_R3(Creature creature) {
         this(((CraftCreature) creature).getHandle());
     }
 

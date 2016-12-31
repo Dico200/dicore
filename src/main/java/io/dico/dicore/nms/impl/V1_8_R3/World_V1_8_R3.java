@@ -11,16 +11,16 @@ import org.bukkit.entity.Entity;
 import java.util.Map;
 import java.util.UUID;
 
-public class WorldImpl implements NWorld {
+public class World_V1_8_R3 implements NWorld {
 
     private final WorldServer server;
     private Map<UUID, Entity> entitiesByUUID;
 
-    public WorldImpl(WorldServer server) {
+    public World_V1_8_R3(WorldServer server) {
         this.server = server;
     }
 
-    public WorldImpl(World world) {
+    public World_V1_8_R3(World world) {
         this(((CraftWorld) world).getHandle());
     }
 

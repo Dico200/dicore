@@ -1,8 +1,8 @@
 package io.dico.dicore.nms.nbt;
 
 import io.dico.dicore.nms.NDriver;
-import io.dico.dicore.nms.impl.V1_8_R3.nbt.NBTListImpl;
-import io.dico.dicore.nms.impl.V1_8_R3.nbt.NBTMapImpl;
+import io.dico.dicore.nms.impl.V1_8_R3.nbt.NBTList_V1_8_R3;
+import io.dico.dicore.nms.impl.V1_8_R3.nbt.NBTMap_V1_8_R3;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public enum NBTType {
     public static NBTList newNBTList() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
-                return new NBTListImpl();
+                return new NBTList_V1_8_R3();
             default:
                 return null;
         }
@@ -48,7 +48,7 @@ public enum NBTType {
     public static NBTMap newNBTMap() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
-                return new NBTMapImpl();
+                return new NBTMap_V1_8_R3();
             default:
                 return null;
         }
@@ -63,7 +63,7 @@ public enum NBTType {
     private static Class<? extends NBTMap> nbtMapClass() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
-                return NBTMapImpl.class;
+                return NBTMap_V1_8_R3.class;
             default:
                 return null;
         }
@@ -72,7 +72,7 @@ public enum NBTType {
     private static Class<? extends NBTList> nbtListClass() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
-                return NBTListImpl.class;
+                return NBTList_V1_8_R3.class;
             default:
                 return null;
         }

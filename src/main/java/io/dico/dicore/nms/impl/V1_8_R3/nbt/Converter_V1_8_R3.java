@@ -5,9 +5,9 @@ import io.dico.dicore.nms.nbt.NBTMap;
 import io.dico.dicore.nms.nbt.NBTType;
 import net.minecraft.server.v1_8_R3.*;
 
-public final class Converter {
+public final class Converter_V1_8_R3 {
 
-    private Converter() {
+    private Converter_V1_8_R3() {
         throw new UnsupportedOperationException();
     }
 
@@ -35,9 +35,9 @@ public final class Converter {
             case 8:
                 return ((NBTTagString) base).a_();
             case 9:
-                return new NBTListImpl((NBTTagList) base);
+                return new NBTList_V1_8_R3((NBTTagList) base);
             case 10:
-                return new NBTMapImpl((NBTTagCompound) base);
+                return new NBTMap_V1_8_R3((NBTTagCompound) base);
             case 11:
                 return ((NBTTagIntArray) base).c();
             default:
@@ -101,16 +101,16 @@ public final class Converter {
                 if (object == NBTList.EMPTY) {
                     return new NBTTagList();
                 }
-                if (object instanceof NBTListImpl) {
-                    return ((NBTListImpl) object).list;
+                if (object instanceof NBTList_V1_8_R3) {
+                    return ((NBTList_V1_8_R3) object).list;
                 }
                 throw new IllegalArgumentException();
             case MAP:
                 if (object == NBTMap.EMPTY) {
                     return new NBTTagCompound();
                 }
-                if (object instanceof NBTMapImpl) {
-                    return ((NBTMapImpl) object).base;
+                if (object instanceof NBTMap_V1_8_R3) {
+                    return ((NBTMap_V1_8_R3) object).base;
                 }
                 throw new IllegalArgumentException();
             default:

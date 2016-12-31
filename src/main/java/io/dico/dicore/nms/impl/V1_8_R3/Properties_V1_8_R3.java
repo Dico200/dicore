@@ -5,10 +5,10 @@ import net.minecraft.server.v1_8_R3.PropertyManager;
 
 import java.io.File;
 
-public class PropertiesImpl implements NProperties {
+public class Properties_V1_8_R3 implements NProperties {
     private PropertyManager propertyManager;
 
-    public PropertiesImpl(PropertyManager propertyManager) {
+    public Properties_V1_8_R3(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
 

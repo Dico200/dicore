@@ -1,6 +1,6 @@
 package io.dico.dicore.nms;
 
-import io.dico.dicore.nms.impl.V1_8_R3.DriverImpl;
+import io.dico.dicore.nms.impl.V1_8_R3.Driver_V1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Creature;
@@ -49,7 +49,7 @@ public interface NDriver {
 
                 switch (instance) {
                     case V1_8_R3:
-                        driver = new DriverImpl();
+                        driver = new Driver_V1_8_R3();
                         break;
                     default:
                         driver = null;
