@@ -6,12 +6,15 @@ import io.dico.dicore.command.Formatting;
 import io.dico.dicore.nms.NDriver;
 import io.dico.dicore.saving.fileadapter.GsonFileAdapter;
 import io.dico.dicore.util.Logging;
+import io.dico.dicore.util.Registrator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +27,7 @@ public class DicoPlugin extends JavaPlugin implements Logging {
     private BukkitTask moduleTickTask;
     private boolean debugging = false;
     private final boolean usesNMS;
+    private Registrator registrator;
 
     public DicoPlugin() {
         usesNMS = false;
@@ -51,6 +55,13 @@ public class DicoPlugin extends JavaPlugin implements Logging {
         if (isDebugging()) {
             getLogger().info("[DEBUG]" + String.valueOf(o));
         }
+    }
+
+    public Registrator getRegistrator() {
+        if (registrator == null) {
+            registrator = new Registrator(this);
+        }
+        return registrator;
     }
 
     public boolean isDebugging() {
@@ -108,11 +119,33 @@ public class DicoPlugin extends JavaPlugin implements Logging {
         modules.add(module);
     }
 
-    protected void registerModuleClass(Class<? extends Module> moduleClass) {
+    private Constructor<? extends Module> getConstructor(Class<? extends Module> moduleClass, Class... params) {
         try {
-            Module module = moduleClass.newInstance();
+            return moduleClass.getConstructor(params);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+
+    protected void registerModuleClass(Class<? extends Module> moduleClass) {
+        if (!isEnabled()) {
+            error("Attempted to register module class " + moduleClass.getCanonicalName() + " but the plugin is not enabled");
+            return;
+        }
+        Constructor<? extends Module> constructor = getConstructor(moduleClass);
+        if (constructor == null) constructor = getConstructor(moduleClass, getClass());
+        if (constructor == null) constructor = getConstructor(moduleClass, String.class, getClass(), boolean.class, boolean.class);
+        if (constructor == null) {
+            error("module class " + moduleClass.getCanonicalName() + " does not declare any recognized public constructors. Any of the following work:");
+            error("(no parameters), (" + getClass().getCanonicalName() + ") or (String, " + getClass().getCanonicalName() + ", boolean, boolean");
+            return;
+        }
+
+        try {
+            Module module = constructor.newInstance();
             registerModule(module);
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            error("failed to construct module " + moduleClass.getCanonicalName() + ": ");
             e.printStackTrace();
         }
     }
