@@ -3,7 +3,13 @@ package io.dico.dicore.util;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
-import org.bukkit.event.*;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.EventExecutor;
@@ -250,6 +256,13 @@ public class Registrator implements Listener {
     private static Listener newEmptyListener() {
         return new Listener() {
         };
+    }
+
+    // cool stuff
+
+    public void onPlayerQuit(Consumer<Player> consumer) {
+        registerListener(PlayerQuitEvent.class, event -> consumer.accept(event.getPlayer()));
+        registerListener(PlayerKickEvent.class, event -> consumer.accept(event.getPlayer()));
     }
 
 }

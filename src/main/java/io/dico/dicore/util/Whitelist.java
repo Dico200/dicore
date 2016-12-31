@@ -55,7 +55,7 @@ public interface Whitelist extends Predicate {
             return NOTHING;
         }
         boolean blacklist = section.getBoolean("blacklist", false);
-        Set list = section.getStringList("listed").stream().map(parser).filter(o -> o != null).collect(Collectors.toSet());
+        Set list = section.getStringList("listed").stream().map(parser).filter(Objects::nonNull).collect(Collectors.toSet());
         switch (list.size()) {
             case 0:
                 return blacklist ? EVERYTHING : NOTHING;
