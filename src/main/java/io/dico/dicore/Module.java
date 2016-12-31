@@ -7,10 +7,11 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 
-public abstract class Module<P extends DicoPlugin> extends Logging.SubLogging {
+public class Module<P extends Plugin> implements Logging {
 
     protected void enable() {
     };
@@ -24,16 +25,17 @@ public abstract class Module<P extends DicoPlugin> extends Logging.SubLogging {
 
     private final P plugin;
     private final String name;
-    private FileConfiguration config;
-    private boolean enabled = false;
     private final boolean usesConfig;
-    protected final String baseFilename;
+    private final boolean debugging;
+    final String baseFilename;
+    private FileConfiguration config;
+    private boolean enabled;
 
-    public Module(String name, P plugin, boolean usesConfig, boolean debugging) {
-        super(name, plugin, debugging);
+    protected Module(String name, P plugin, boolean usesConfig, boolean debugging) {
         this.plugin = plugin;
         this.name = name;
         this.usesConfig = usesConfig;
+        this.debugging = debugging;
         baseFilename = name.toLowerCase().replace(" ", "_");
         info("Loading module " + getName());
     }
@@ -121,6 +123,27 @@ public abstract class Module<P extends DicoPlugin> extends Logging.SubLogging {
         }
 
         saveConfig();
+    }
+
+    private String prefix(Object o) {
+        return String.format("[%s]%s", name, String.valueOf(o));
+    }
+
+    @Override
+    public void error(Object o) {
+        plugin.getLogger().severe(prefix(o));
+    }
+
+    @Override
+    public void info(Object o) {
+        plugin.getLogger().info(prefix(o));
+    }
+
+    @Override
+    public void debug(Object o) {
+        if (debugging) {
+            plugin.getLogger().info("[DEBUG]" + prefix(String.valueOf(o)));
+        }
     }
 
     private YamlConfiguration loadYaml(InputStream config, String configType) {

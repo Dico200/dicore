@@ -3,7 +3,7 @@ package io.dico.dicore;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
 import io.dico.dicore.command.Formatting;
-import io.dico.dicore.saving.JsonFileAdapter;
+import io.dico.dicore.saving.fileadapter.GsonFileAdapter;
 import io.dico.dicore.util.Logging;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -108,11 +108,21 @@ public class DicoPlugin extends JavaPlugin implements Logging {
 
     // ----- FILE ADAPTERS -----
 
-    protected <T> JsonFileAdapter<T> createFileAdapter(Type typeOfT, GsonBuilder gson) {
-        return new JsonFileAdapter<>(typeOfT, gson.setPrettyPrinting().create(), this::error, this::error);
+    protected <T> GsonFileAdapter<T> createFileAdapter(Type typeOfT, GsonBuilder gson) {
+        return new GsonFileAdapter<T>(typeOfT, gson.setPrettyPrinting().create()) {
+            @Override
+            protected void onErrorLoad(Exception ex) {
+                error(ex);
+            }
+
+            @Override
+            protected void onErrorSave(Exception ex) {
+                error(ex);
+            }
+        };
     }
 
-    protected <T> JsonFileAdapter<T> createFileAdapter(Type typeOfT, TypeAdapter<? super T> typeTAdapter) {
+    protected <T> GsonFileAdapter<T> createFileAdapter(Type typeOfT, TypeAdapter<? super T> typeTAdapter) {
         return createFileAdapter(typeOfT, new GsonBuilder().registerTypeAdapter(typeOfT, typeTAdapter));
     }
 
