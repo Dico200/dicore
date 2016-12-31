@@ -1,7 +1,12 @@
 package io.dico.dicore.nms;
 
 import io.dico.dicore.nms.impl.V1_8_R3.DriverImpl;
+import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Creature;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.function.Predicate;
 
 public interface NDriver {
 
@@ -11,7 +16,9 @@ public interface NDriver {
 
     NServer getServer();
 
-    NItemStackSupport getItemStackSupport();
+    ItemStack exploreNBT(ItemStack stack, Predicate<NBTMap> changed);
+
+    NCreatureEquipment getCreatureEquipment(Creature creature);
 
     enum Version {
 
