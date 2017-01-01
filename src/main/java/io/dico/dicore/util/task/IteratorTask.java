@@ -1,5 +1,7 @@
 package io.dico.dicore.util.task;
 
+import org.bukkit.plugin.Plugin;
+
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -10,9 +12,20 @@ public abstract class IteratorTask<T> extends BaseTask<T> {
 
     private Iterator<? extends T> iterator;
 
+    public IteratorTask() {
+    }
+
     @SuppressWarnings("unchecked")
     public IteratorTask(Iterable<? extends T> iterable, boolean clone) {
         refresh(iterable, clone);
+    }
+
+    public IteratorTask(Iterable<? extends T> iterable) {
+        this(iterable, false);
+    }
+
+    public IteratorTask(Iterator<? extends T> iterator) {
+        refresh(iterator);
     }
 
     protected final void refresh(Iterable<? extends T> iterable, boolean clone) {
@@ -32,8 +45,17 @@ public abstract class IteratorTask<T> extends BaseTask<T> {
         }
     }
 
-    public IteratorTask(Iterable<? extends T> iterable) {
-        this(iterable, false);
+    protected final void refresh(Iterator<? extends T> iterator) {
+        Objects.requireNonNull(iterator);
+        this.iterator = iterator;
+    }
+
+    @Override
+    public void start(Plugin plugin, int delay, int period, long workTime) {
+        if (iterator == null) {
+            throw new IllegalStateException("An iterator must be supplied first");
+        }
+        super.start(plugin, delay, period, workTime);
     }
 
     @Override

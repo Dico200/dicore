@@ -12,7 +12,7 @@ public abstract class BaseTask<T> {
     private Integer taskId = null;
     private long workTime;
 
-    public void start(Plugin plugin, long delay, long period, long workTime) {
+    public void start(Plugin plugin, int delay, int period, long workTime) {
         this.workTime = workTime;
         taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::run, delay, period);
         running = true;
