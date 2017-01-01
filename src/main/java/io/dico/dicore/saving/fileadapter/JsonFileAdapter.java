@@ -12,9 +12,17 @@ public abstract class JsonFileAdapter<T extends JsonLoadable> extends FileAdapte
 
     protected abstract T createNew();
 
+    protected boolean makeReadable() {
+        return false;
+    }
+
     @Override
     protected JsonWriter newWriter(String path) throws IOException {
-        return new JsonWriter(new FileWriter(fileAt(path, true)));
+        JsonWriter result = new JsonWriter(new FileWriter(fileAt(path, true)));
+        if (makeReadable()) {
+            result.setIndent("  ");
+        }
+        return result;
     }
 
     @Override

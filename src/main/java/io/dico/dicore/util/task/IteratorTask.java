@@ -8,10 +8,14 @@ import java.util.function.Predicate;
 
 public abstract class IteratorTask<T> extends BaseTask<T> {
 
-    private final Iterator<? extends T> iterator;
+    private Iterator<? extends T> iterator;
 
     @SuppressWarnings("unchecked")
     public IteratorTask(Iterable<? extends T> iterable, boolean clone) {
+        refresh(iterable, clone);
+    }
+
+    protected final void refresh(Iterable<? extends T> iterable, boolean clone) {
         if (clone) {
             Collection<T> collection;
             if (!(iterable instanceof Collection)) {
@@ -20,7 +24,7 @@ public abstract class IteratorTask<T> extends BaseTask<T> {
                     collection.add(next);
                 }
             } else {
-                collection = new ArrayList<>((Collection) iterable);
+                collection = new ArrayList((Collection) iterable);
             }
             iterator = collection.iterator();
         } else {

@@ -3,6 +3,7 @@ package io.dico.dicore.nms;
 import io.dico.dicore.nms.impl.V1_8_R3.Driver_V1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Creature;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,6 +20,8 @@ public interface NDriver {
     ItemStack exploreNBT(ItemStack stack, Predicate<NBTMap> changed);
 
     NCreatureEquipment getCreatureEquipment(Creature creature);
+
+    NWorld getWorld(World world);
 
     enum Version {
 

@@ -14,8 +14,8 @@ public abstract class BaseTask<T> {
 
     public void start(Plugin plugin, long delay, long period, long workTime) {
         this.workTime = workTime;
-        running = true;
         taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this::run, delay, period);
+        running = true;
     }
 
     public void start(Plugin plugin) {
@@ -32,6 +32,10 @@ public abstract class BaseTask<T> {
         while (System.currentTimeMillis() - start < workTime && processNext()) ;
     }
 
+    public int getTaskId() {
+        return running ? taskId : -1;
+    }
+
     public boolean isRunning() {
         return running;
     }
@@ -40,8 +44,9 @@ public abstract class BaseTask<T> {
 
     private void cancelTask(boolean early) {
         Bukkit.getScheduler().cancelTask(taskId);
-        onFinish(early);
         running = false;
+        taskId = null;
+        onFinish(early);
     }
 
     private boolean processNext() {

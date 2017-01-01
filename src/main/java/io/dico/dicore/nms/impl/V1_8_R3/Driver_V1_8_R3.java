@@ -3,16 +3,21 @@ package io.dico.dicore.nms.impl.V1_8_R3;
 import io.dico.dicore.nms.NCreatureEquipment;
 import io.dico.dicore.nms.NDriver;
 import io.dico.dicore.nms.NServer;
+import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.nms.impl.V1_8_R3.nbt.NBTMap_V1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 public class Driver_V1_8_R3 implements NDriver {
     private final NServer server = new Server_V1_8_R3();
+    private final Map<World, NWorld> worlds = new HashMap<>();
 
     @Override
     public NServer getServer() {
@@ -32,6 +37,11 @@ public class Driver_V1_8_R3 implements NDriver {
     @Override
     public NCreatureEquipment getCreatureEquipment(Creature creature) {
         return new CreatureEquipment_V1_8_R3(creature);
+    }
+
+    @Override
+    public NWorld getWorld(World world) {
+        return worlds.computeIfAbsent(world, World_V1_8_R3::new);
     }
 
 }
