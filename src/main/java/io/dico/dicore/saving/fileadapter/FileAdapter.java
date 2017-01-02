@@ -1,15 +1,16 @@
 package io.dico.dicore.saving.fileadapter;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
-public abstract class FileAdapter<T, W extends Closeable, R extends Closeable, E extends Exception> {
+public abstract class FileAdapter<T> {
 
-    protected static File fileAt(String path, boolean createIfAbsent) throws IOException {
+    public static File fileAt(String path, boolean createIfAbsent) throws IOException {
         File file = new File(path);
-        if (createIfAbsent) {
+        if (createIfAbsent && !file.exists()) {
             File parent = file.getParentFile();
-            if ((parent == null || parent.exists() || parent.mkdirs()) && !file.exists() && !(file.createNewFile())) {
-                throw new IOException("Failed to create file");
+            if (parent == null || !(parent.exists() || parent.mkdirs()) || !file.createNewFile()) {
+                throw new IOException("Failed to create file " + file.getAbsolutePath());
             }
         }
         return file;
@@ -19,19 +20,9 @@ public abstract class FileAdapter<T, W extends Closeable, R extends Closeable, E
 
     protected abstract void onErrorSave(Exception ex);
 
-    protected abstract W newWriter(String path) throws E;
+    protected abstract T fallback();
 
-    protected abstract void write(T object, W writerTo) throws E;
-
-    protected abstract R newReader(String path) throws E;
-
-    protected abstract T read(R readerFrom) throws E;
-
-    public void saveUnsafe(T object, String path) throws E, IOException {
-        try (W writer = newWriter(path)) {
-            write(object, writer);
-        }
-    }
+    public abstract void saveUnsafe(T object, String path) throws Exception;
 
     public void save(T object, String path) {
         try {
@@ -41,18 +32,14 @@ public abstract class FileAdapter<T, W extends Closeable, R extends Closeable, E
         }
     }
 
-    public T loadUnsafe(String path) throws E, IOException {
-        try (R reader = newReader(path)) {
-            return read(reader);
-        }
-    }
+    public abstract T loadUnsafe(String path) throws Exception;
 
     public T load(String path) {
         try {
             return loadUnsafe(path);
         } catch (Exception ex) {
             onErrorLoad(ex);
-            return null;
+            return fallback();
         }
     }
 

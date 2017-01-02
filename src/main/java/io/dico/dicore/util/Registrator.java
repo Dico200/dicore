@@ -152,7 +152,7 @@ public class Registrator implements Listener {
         if (listener.getPlugin() != plugin) {
             EventExecutor executor = null;
             try {
-                executor = (EventExecutor) Reflection.getValueInField(RegisteredListener.class, "executor", listener);
+                executor = Reflection.getValueInField(RegisteredListener.class, "executor", listener);
             } catch (ClassCastException ignored) {
             }
             if (executor != null) {
@@ -220,7 +220,7 @@ public class Registrator implements Listener {
         return (ignored, event) -> {
             T eventCasted;
             try {
-                eventCasted = (T) event;
+                eventCasted = eventClass.cast(event);
             } catch (ClassCastException e) {
                 return;
             }
@@ -259,7 +259,6 @@ public class Registrator implements Listener {
     }
 
     // cool stuff
-
     public void onPlayerQuit(Consumer<Player> consumer) {
         registerListener(PlayerQuitEvent.class, event -> consumer.accept(event.getPlayer()));
         registerListener(PlayerKickEvent.class, event -> consumer.accept(event.getPlayer()));
