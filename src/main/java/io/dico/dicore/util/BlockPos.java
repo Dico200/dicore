@@ -14,15 +14,17 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.configuration.serialization.SerializableAs;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
 @SerializableAs("BlockPos")
-public final class BlockPos implements Comparable<BlockPos>, JsonLoadable, ConfigurationSerializable, Cloneable {
-    private static final Object unknown = new Object();
+public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonLoadable, ConfigurationSerializable, Cloneable {
+    private static final long serialVersionUID = 200L;
+    private static transient final Object unknown = new Object();
     private String worldName;
-    private Object world = unknown;
-    private Object block = unknown;
+    private transient Object world = unknown;
+    private transient Object block = unknown;
     private int x;
     private int y;
     private int z;
@@ -369,21 +371,20 @@ public final class BlockPos implements Comparable<BlockPos>, JsonLoadable, Confi
 
     @Override
     public BlockPos clone() {
+        BlockPos result;
         try {
-            BlockPos result = (BlockPos) super.clone();
-            result.mutable = true;
-            return result;
+            result = (BlockPos) super.clone();
         } catch (CloneNotSupportedException ex) {
-            BlockPos result = new BlockPos();
+            result = new BlockPos();
             result.worldName = worldName;
             result.world = world;
             result.block = block;
             result.x = x;
             result.y = y;
             result.z = z;
-            result.mutable = true;
-            return result;
         }
+        result.mutable = true;
+        return result;
     }
 
     @Override
