@@ -43,11 +43,11 @@ public abstract class JsonFileAdapter<T extends JsonLoadable> extends FileAdapte
         return object;
     }
 
-    public static <T extends JsonLoadable> JsonFileAdapter<T> create(Supplier<T> constructor, Consumer<Exception> onError) {
+    public static <T extends JsonLoadable> JsonFileAdapter<T> create(Supplier<T> constructor, Consumer<? super Exception> onError) {
         return create(constructor, onError, onError);
     }
 
-    public static <T extends JsonLoadable> JsonFileAdapter<T> create(Supplier<T> constructor, Consumer<Exception> onLoad, Consumer<Exception> onSave) {
+    public static <T extends JsonLoadable> JsonFileAdapter<T> create(Supplier<T> constructor, Consumer<? super Exception> onLoad, Consumer<? super Exception> onSave) {
         return new JsonFileAdapter<T>() {
             @Override
             protected void onErrorLoad(Exception ex) {

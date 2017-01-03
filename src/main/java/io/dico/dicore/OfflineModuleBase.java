@@ -9,9 +9,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 abstract class OfflineModuleBase<P extends Plugin, T> extends Module<P> implements Saveable {
-
     private T data;
-    private final FileAdapter<T, ?, ?, ?> fileAdapter;
+    private final FileAdapter<T> fileAdapter;
     private final String file;
     private boolean saveScheduled = false;
 
@@ -32,7 +31,7 @@ abstract class OfflineModuleBase<P extends Plugin, T> extends Module<P> implemen
         fileAdapter = Objects.requireNonNull(newAdapter(onErrorLoad, onErrorSave));
     }
 
-    abstract FileAdapter<T, ?, ?, ?> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave);
+    abstract FileAdapter<T> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave);
 
     protected abstract T generateDefaultData();
 

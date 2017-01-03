@@ -36,11 +36,11 @@ public abstract class GsonFileAdapter<T> extends FileAdapter<T> {
         }
     }
 
-    public static <T> GsonFileAdapter<T> create(Type typeOfT, Gson gson, Consumer<Exception> onError) {
+    public static <T> GsonFileAdapter<T> create(Type typeOfT, Gson gson, Consumer<? super Exception> onError) {
         return create(typeOfT, gson, onError, onError);
     }
 
-    public static <T> GsonFileAdapter<T> create(Type typeOfT, Gson gson, Consumer<Exception> onLoad, Consumer<Exception> onSave) {
+    public static <T> GsonFileAdapter<T> create(Type typeOfT, Gson gson, Consumer<? super Exception> onLoad, Consumer<? super Exception> onSave) {
         return new GsonFileAdapter<T>(typeOfT, gson) {
             @Override
             protected void onErrorLoad(Exception ex) {

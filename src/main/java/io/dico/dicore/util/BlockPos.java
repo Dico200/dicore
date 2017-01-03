@@ -222,6 +222,14 @@ public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonL
         return with(this.x + x, this.y + y, this.z + z);
     }
 
+    public BlockPos add(BlockPos other) {
+        return add(other.x, other.y, other.z);
+    }
+
+    public BlockPos subtract(BlockPos other) {
+        return add(-other.x, -other.y, -other.z);
+    }
+
     public BlockPos multiplyX(int x) {
         return withX(this.x * x);
     }
@@ -367,6 +375,10 @@ public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonL
 
     public BlockPos cloneIfImmutable() {
         return mutable ? this : clone();
+    }
+
+    public BlockPos cloneIfMutable() {
+        return mutable ? clone() : this;
     }
 
     @Override

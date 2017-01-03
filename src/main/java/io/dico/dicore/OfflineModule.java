@@ -9,7 +9,6 @@ import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
 public abstract class OfflineModule<P extends Plugin, T> extends OfflineModuleBase<P, T> {
-
     private final Type typeOfT = getDataType();
 
     public OfflineModule(String name, P plugin, boolean usesConfig, boolean debugging) {
@@ -25,18 +24,8 @@ public abstract class OfflineModule<P extends Plugin, T> extends OfflineModuleBa
     protected abstract Type getDataType();
 
     @Override
-    FileAdapter<T, ?, ?, ?> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
-        return new GsonFileAdapter<T>(typeOfT, createGson()) {
-            @Override
-            protected void onErrorLoad(Exception ex) {
-                onErrorLoad.accept(ex);
-            }
-
-            @Override
-            protected void onErrorSave(Exception ex) {
-                onErrorSave.accept(ex);
-            }
-        };
+    FileAdapter<T> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
+        return GsonFileAdapter.create(typeOfT, createGson(), onErrorLoad, onErrorSave);
     }
 
 }

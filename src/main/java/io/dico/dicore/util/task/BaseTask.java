@@ -6,9 +6,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.NoSuchElementException;
 
 public abstract class BaseTask<T> {
-
     private boolean running = false;
-
     private Integer taskId = null;
     private long workTime;
 
@@ -25,11 +23,19 @@ public abstract class BaseTask<T> {
     protected void onFinish(boolean early) {
     }
 
+    protected long getWorkTime() {
+        return workTime;
+    }
+
     protected abstract boolean process(T object);
 
     private void run() {
-        final long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < workTime && processNext()) ;
+        final long stop = System.currentTimeMillis() + getWorkTime();
+        do {
+            if (!processNext()) {
+                return;
+            }
+        } while (System.currentTimeMillis() < stop);
     }
 
     public int getTaskId() {
@@ -58,11 +64,16 @@ public abstract class BaseTask<T> {
             return false;
         }
 
-        if (!process(object)) {
-            cancelTask(true);
-            return false;
+        try {
+            if (process(object)) {
+                return true;
+            }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         }
-        return true;
+
+        cancelTask(true);
+        return false;
     }
 
 }
