@@ -1,34 +1,36 @@
-package io.dico.dicore.util;
+package io.dico.dicore.util.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import io.dico.dicore.saving.JsonLoadable;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
+import org.bukkit.*;
+import org.bukkit.block.*;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.configuration.serialization.SerializableAs;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @SerializableAs("BlockPos")
-public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonLoadable, ConfigurationSerializable, Cloneable {
+public final class BlockPos implements Block, Comparable<BlockPos>, Serializable, JsonLoadable, ConfigurationSerializable, Cloneable {
     private static final long serialVersionUID = 200L;
-    private static transient final Object unknown = new Object();
-    private String worldName;
-    private transient Object world = unknown;
-    private transient Object block = unknown;
-    private int x;
-    private int y;
-    private int z;
-    private boolean mutable;
+    protected static final transient Object unknown = new Object();
+    protected String worldName;
+    protected transient Object world = unknown;
+    protected transient Object block = unknown;
+    protected int x;
+    protected int y;
+    protected int z;
+    protected boolean mutable;
 
     public BlockPos() {
     }
@@ -340,6 +342,7 @@ public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonL
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        //TODO make equal if block equal
         if (o == null || getClass() != o.getClass()) return false;
 
         BlockPos that = (BlockPos) o;
@@ -352,6 +355,7 @@ public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonL
 
     @Override
     public int hashCode() {
+        //TODO use same algorithm as CraftBlock
         int result = worldName.hashCode();
         result = 31 * result + x;
         result = 31 * result + y;
@@ -408,7 +412,7 @@ public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonL
     public void loadFrom(JsonReader reader) throws IOException {
         reader.beginObject();
         while (reader.hasNext()) {
-            final String key = reader.nextName();
+            String key = reader.nextName();
             if (!key.isEmpty()) switch (key.charAt(0)) {
                 case 'w':
                     worldName = reader.nextString();
@@ -489,6 +493,224 @@ public final class BlockPos implements Comparable<BlockPos>, Serializable, JsonL
 
     static {
         ConfigurationSerialization.registerClass(BlockPos.class);
+    }
+
+    @Override
+    public byte getData() {
+        return getBlock().getData();
+    }
+
+    @Override
+    public BlockPos getRelative(int x, int y, int z) {
+        return add(x, y, z);
+    }
+
+    @Override
+    public BlockPos getRelative(BlockFace face) {
+        return add(face.getModX(), face.getModY(), face.getModZ());
+    }
+
+    @Override
+    public BlockPos getRelative(BlockFace face, int multiplier) {
+        return add(face.getModX() * multiplier, face.getModX() * multiplier, face.getModZ() * multiplier);
+    }
+
+    @Override
+    public Material getType() {
+        return getBlock().getType();
+    }
+
+    @Override
+    public int getTypeId() {
+        return getBlock().getTypeId();
+    }
+
+    @Override
+    public Chunk getChunk() {
+        return getWorld().getChunkAt(x >> 4, z >> 4);
+    }
+
+    @Override
+    public Location getLocation() {
+        return new Location(getWorld(), x, y, z);
+    }
+
+    @Override
+    public Location getLocation(Location loc) {
+        if(loc != null) {
+            loc.setWorld(getWorld());
+            loc.setX(x);
+            loc.setY(y);
+            loc.setZ(z);
+            loc.setYaw(0);
+            loc.setPitch(0);
+        }
+        return loc;
+    }
+
+    @Override
+    public byte getLightLevel() {
+        return getBlock().getLightLevel();
+    }
+
+    @Override
+    public byte getLightFromSky() {
+        return getBlock().getLightFromSky();
+    }
+
+    @Override
+    public byte getLightFromBlocks() {
+        return getBlock().getLightFromBlocks();
+    }
+
+    @Override
+    public void setData(byte data) {
+        getBlock().setData(data);
+    }
+
+    @Override
+    public void setData(byte data, boolean applyPhysics) {
+        getBlock().setData(data, applyPhysics);
+    }
+
+    @Override
+    public void setType(Material material) {
+        getBlock().setType(material);
+    }
+
+    @Override
+    public void setType(Material material, boolean applyPhysics) {
+        getBlock().setType(material, applyPhysics);
+    }
+
+    @Override
+    public boolean setTypeId(int id) {
+        return getBlock().setTypeId(id);
+    }
+
+    @Override
+    public boolean setTypeId(int id, boolean applyPhysics) {
+        return getBlock().setTypeId(id, applyPhysics);
+    }
+
+    @Override
+    public boolean setTypeIdAndData(int id, byte data, boolean applyPhysics) {
+        return getBlock().setTypeIdAndData(id, data, applyPhysics);
+    }
+
+    @Override
+    public BlockFace getFace(Block block) {
+        return getBlock().getFace(block);
+    }
+
+    @Override
+    public BlockState getState() {
+        return getBlock().getState();
+    }
+
+    @Override
+    public Biome getBiome() {
+        return getBlock().getBiome();
+    }
+
+    @Override
+    public void setBiome(Biome biome) {
+        getBlock().setBiome(biome);
+    }
+
+    @Override
+    public boolean isBlockPowered() {
+        return getBlock().isBlockPowered();
+    }
+
+    @Override
+    public boolean isBlockIndirectlyPowered() {
+        return getBlock().isBlockIndirectlyPowered();
+    }
+
+    @Override
+    public boolean isBlockFacePowered(BlockFace face) {
+        return getBlock().isBlockFacePowered(face);
+    }
+
+    @Override
+    public boolean isBlockFaceIndirectlyPowered(BlockFace face) {
+        return getBlock().isBlockFaceIndirectlyPowered(face);
+    }
+
+    @Override
+    public int getBlockPower(BlockFace face) {
+        return getBlock().getBlockPower(face);
+    }
+
+    @Override
+    public int getBlockPower() {
+        return getBlock().getBlockPower();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return getBlock().isEmpty();
+    }
+
+    @Override
+    public boolean isLiquid() {
+        return getBlock().isLiquid();
+    }
+
+    @Override
+    public double getTemperature() {
+        return getBlock().getTemperature();
+    }
+
+    @Override
+    public double getHumidity() {
+        return getBlock().getHumidity();
+    }
+
+    @Override
+    public PistonMoveReaction getPistonMoveReaction() {
+        return getBlock().getPistonMoveReaction();
+    }
+
+    @Override
+    public boolean breakNaturally() {
+        return getBlock().breakNaturally();
+    }
+
+    @Override
+    public boolean breakNaturally(ItemStack stack) {
+        return getBlock().breakNaturally(stack);
+    }
+
+    @Override
+    public Collection<ItemStack> getDrops() {
+        return getBlock().getDrops();
+    }
+
+    @Override
+    public Collection<ItemStack> getDrops(ItemStack itemStack) {
+        return getBlock().getDrops(itemStack);
+    }
+
+    @Override
+    public void setMetadata(String key, MetadataValue value) {
+        getBlock().setMetadata(key, value);
+    }
+
+    @Override
+    public List<MetadataValue> getMetadata(String key) {
+        return getBlock().getMetadata(key);
+    }
+
+    @Override
+    public boolean hasMetadata(String key) {
+        return getBlock().hasMetadata(key);
+    }
+
+    @Override
+    public void removeMetadata(String key, Plugin plugin) {
+        getBlock().removeMetadata(key, plugin);
     }
 
 }

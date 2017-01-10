@@ -8,7 +8,7 @@ import java.util.List;
 
 public abstract class Command extends Hierarchy<Command> {
 
-	final String acceptCall(CommandSender sender, String[] args) {
+	protected String acceptCall(CommandSender sender, String[] args) {
 		doSenderChecks(sender);
 		
 		CommandAction action;
@@ -24,13 +24,13 @@ public abstract class Command extends Hierarchy<Command> {
 		return action.execute(this, sender, args);
 	}
 	
-	final String invokeExecutor(CommandSender sender, String[] args) {
+	protected String invokeExecutor(CommandSender sender, String[] args) {
 		return execute(sender, params.toScape(args));
 	}
-	
+
 	protected abstract String execute(CommandSender sender, CommandScape scape);
 	
-	final List<String> acceptTabComplete(CommandSender sender, String[] args) {
+	protected List<String> acceptTabComplete(CommandSender sender, String[] args) {
 		return accepts(sender) ? tabComplete(sender, params.toScape(args, complete(args))) : new ArrayList<>();
 	}
 	
@@ -38,7 +38,7 @@ public abstract class Command extends Hierarchy<Command> {
 		return scape.proposals();
 	}
 	
-	private final void doSenderChecks(CommandSender sender) {
+	private void doSenderChecks(CommandSender sender) {
 		senderType.check(sender);
 		
 		if (permission != null && !permission.isEmpty()) {
@@ -122,8 +122,36 @@ public abstract class Command extends Hierarchy<Command> {
 			return false;
 		}
 	}
-	
-	protected final String collectPath(int layerFrom) {
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public SenderType getSenderType() {
+        return senderType;
+    }
+
+    public String[] getHelpInformation() {
+        return helpInformation;
+    }
+
+    public Parameters getParams() {
+        return params;
+    }
+
+    public CommandAction getOnHelpRequest() {
+        return onHelpRequest;
+    }
+
+    public CommandAction getOnSyntaxRequest() {
+        return onSyntaxRequest;
+    }
+
+    public HelpWriter getMessager() {
+        return messager;
+    }
+
+    protected final String collectPath(int layerFrom) {
 		String[] prev = Arrays.copyOfRange(getPath(), layerFrom, getLayer() - 1);
 		return String.format("%s %s", String.join(" ", prev), getId());
 	}
@@ -167,7 +195,7 @@ public abstract class Command extends Hierarchy<Command> {
 	}
 	
 	/**
-	 * @param helpInformation Lines to print when help is requested. Comes down to a very detailed description.
+	 * @param lines Lines to print when help is requested. Comes down to a very detailed description.
 	 * @default empty string[]
 	 */
 	protected final void setHelpInformation(String... lines) {

@@ -53,16 +53,16 @@ public class Reflection {
         runSafeIgnoreNullPointer(() -> field.set(instance, newValue));
     }
 
-    public static Object invokeMethod(Object methodOwner, String methodName, Object... args) {
-        return supplySafeIgnoreNullPointer(() -> getMethodNoCatch(methodOwner.getClass(), methodName).invoke(methodOwner, args));
+    public static <T> T invokeMethod(Object methodOwner, String methodName, Object... args) {
+        return supplySafeIgnoreNullPointer(() -> (T) getMethodNoCatch(methodOwner.getClass(), methodName).invoke(methodOwner, args));
     }
 
-    public static Object invokeMethod(Class<?> clazz, String methodName, Object instance, Object... args) {
-        return supplySafeIgnoreNullPointer(() -> getMethodNoCatch(clazz, methodName).invoke(instance, args));
+    public static <T> T invokeMethod(Class<?> clazz, String methodName, Object instance, Object... args) {
+        return supplySafeIgnoreNullPointer(() -> (T) getMethodNoCatch(clazz, methodName).invoke(instance, args));
     }
 
-    public static Object invokeMethod(Method method, Object instance, Object... args) {
-        return supplySafeIgnoreNullPointer(() -> method.invoke(instance, args));
+    public static <T> T invokeMethod(Method method, Object instance, Object... args) {
+        return supplySafeIgnoreNullPointer(() -> (T) method.invoke(instance, args));
     }
 
     public static Method getMethod(Class<?> clazz, String methodName) {

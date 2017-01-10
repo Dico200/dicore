@@ -68,6 +68,10 @@ public interface Whitelist extends Predicate {
                 return blacklist ? not(iterator.next(), iterator.next()) : only(iterator.next(), iterator.next());
             }
             default:
+                Object item = list.iterator().next();
+                if (item instanceof Enum) {
+                    list = EnumSet.copyOf(list);
+                }
                 return new SetBasedWhitelist(list, blacklist);
         }
     }

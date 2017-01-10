@@ -14,7 +14,7 @@ public interface Logging {
 
         private final String prefix;
         private final Logger root;
-        private final boolean debugging;
+        private boolean debugging;
 
         public RootLogging(String prefix, Logger root, boolean debugging) {
             this.root = root;
@@ -35,8 +35,16 @@ public interface Logging {
         @Override
         public void debug(Object o) {
             if (debugging) {
-                root.info(String.format("[DEBUG %s] %s", prefix(String.valueOf(o))));
+                root.info(String.format("[DEBUG] %s", prefix(String.valueOf(o))));
             }
+        }
+
+        public void setDebugging(boolean debugging) {
+            this.debugging = debugging;
+        }
+
+        public boolean isDebugging() {
+            return debugging;
         }
 
         private String prefix(Object o) {

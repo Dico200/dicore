@@ -3,6 +3,7 @@ package io.dico.dicore.util;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -180,6 +181,8 @@ public class JsonUtil {
     public static void insert(JsonWriter writer, Object value) throws IOException {
         if (value instanceof ConfigurationSerializable) {
             value = ((ConfigurationSerializable) value).serialize();
+        } else if (value instanceof ConfigurationSection) {
+            value = ((ConfigurationSection) value).getValues(false);
         }
 
         if (value instanceof Map) {

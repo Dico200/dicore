@@ -3,6 +3,8 @@ package io.dico.dicore.nms.nbt;
 import io.dico.dicore.nms.NDriver;
 import io.dico.dicore.nms.impl.V1_8_R3.nbt.NBTList_V1_8_R3;
 import io.dico.dicore.nms.impl.V1_8_R3.nbt.NBTMap_V1_8_R3;
+import io.dico.dicore.nms.impl.unknown.nbt.NBTList_UNKNOWN;
+import io.dico.dicore.nms.impl.unknown.nbt.NBTMap_UNKNOWN;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ public enum NBTType {
             case V1_8_R3:
                 return new NBTList_V1_8_R3();
             default:
-                return null;
+                return new NBTList_UNKNOWN();
         }
     }
 
@@ -50,7 +52,7 @@ public enum NBTType {
             case V1_8_R3:
                 return new NBTMap_V1_8_R3();
             default:
-                return null;
+                return new NBTMap_UNKNOWN();
         }
     }
 
@@ -65,7 +67,7 @@ public enum NBTType {
             case V1_8_R3:
                 return NBTMap_V1_8_R3.class;
             default:
-                return null;
+                return NBTMap_UNKNOWN.class;
         }
     }
 
@@ -74,11 +76,11 @@ public enum NBTType {
             case V1_8_R3:
                 return NBTList_V1_8_R3.class;
             default:
-                return null;
+                return NBTList_UNKNOWN.class;
         }
     }
 
-    private static final Map<Class<?>, NBTType> map = new HashMap<>();
+    private static Map<Class<?>, NBTType> map;
     private final Class<?> clazz;
 
     NBTType(Class<?> clazz) {
@@ -87,10 +89,14 @@ public enum NBTType {
     }
 
     private void add() {
+        if (map == null) {
+            map = new HashMap<>();
+        }
         map.put(clazz, this);
     }
 
     public Class<?> getType() {
         return clazz;
     }
+
 }

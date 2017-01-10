@@ -16,11 +16,23 @@ public class InputHandler extends org.bukkit.command.Command {
 	private String prefix;
 
 	protected InputHandler(Command parent, String prefix) {
+		this(parent, Messaging.PREFIX_FORMAT, prefix);
+	}
+
+	protected InputHandler(Command parent, String prefixFormat, String prefix) {
 		super(parent.getId(), parent.getDescription(), "", parent.getAliases());
 		this.parent = parent;
 		this.other = null;
 		this.takePriority = true;
+
+		if (prefix == null) {
+			prefix = "";
+		}
+		if (prefixFormat != null) {
+			prefix = String.format(Formatting.translateChars('&', prefixFormat), prefix);
+		}
 		this.prefix = prefix;
+
 		setTimingsIfNecessary();
 	}
 
@@ -60,7 +72,7 @@ public class InputHandler extends org.bukkit.command.Command {
 		}
 
 		if (!(message == null || message.isEmpty())) {
-			Messaging.send(sender, prefix, color, message);
+			Messaging.send(sender, null, prefix, color, message);
 		}
 		return true;
 	}

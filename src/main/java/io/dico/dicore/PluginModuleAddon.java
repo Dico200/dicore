@@ -1,29 +1,50 @@
 package io.dico.dicore;
 
 import io.dico.dicore.command.Formatting;
+import io.dico.dicore.util.Logging;
 import io.dico.dicore.util.Modules;
 import io.dico.dicore.util.Registrator;
 import io.dico.dicore.util.TickTask;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DicoPlugin extends JavaPlugin implements ModuleManager {
+public class PluginModuleAddon extends Logging.RootLogging implements ModuleManager {
+    private final Plugin plugin;
+    private final String name;
     private final Registrator registrator;
     private final Set<Module> modules = new HashSet<>();
     private final TickTask tickTask;
     private final TickTask moduleTickTask;
     private String messagePrefix;
-    private boolean debugging;
+    private boolean enabled;
 
-    public DicoPlugin() {
-        registrator = new Registrator(this);
-        messagePrefix = Formatting.translateChars('&', "&4[&c" + getName() + "&4] &a");
+    public PluginModuleAddon(Plugin plugin, String name) {
+        super(name == null ? "" : name, plugin.getLogger(), false);
+        this.plugin = plugin;
+        this.name = name == null ? "" : name;
+        this.registrator = (plugin instanceof DicoPlugin) ? ((DicoPlugin) plugin).getRegistrator() : new Registrator(plugin);
+        messagePrefix = Formatting.translateChars('&', "&4[&c" + plugin.getName() + "&4] &a");
+
+        tickTask = new TickTask(plugin) {
+            @Override
+            protected void tick() {
+                PluginModuleAddon.this.tick();
+            }
+        };
+
+        moduleTickTask = new TickTask(plugin) {
+            @Override
+            protected void tick() {
+                PluginModuleAddon.this.tickModules();
+            }
+        };
     }
 
     @Override
@@ -47,7 +68,7 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
         try {
             module.setEnabled(true);
             if (module instanceof Listener) {
-                Bukkit.getPluginManager().registerEvents((Listener) module, this);
+                Bukkit.getPluginManager().registerEvents((Listener) module, plugin);
             }
         } catch (Throwable t) {
             error("Failed to enable module " + module.getName());
@@ -97,33 +118,6 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
     }
 
     @Override
-    public void error(Object o) {
-        getLogger().severe(String.valueOf(o));
-    }
-
-    @Override
-    public void info(Object o) {
-        getLogger().info(String.valueOf(o));
-    }
-
-    @Override
-    public void debug(Object o) {
-        if (debugging) {
-            getLogger().info(String.format("[DEBUG] %s", String.valueOf(o)));
-        }
-    }
-
-    @Override
-    public boolean isDebugging() {
-        return debugging;
-    }
-
-    @Override
-    public void setDebugging(boolean debugging) {
-        this.debugging = debugging;
-    }
-
-    @Override
     public String getMessagePrefix() {
         return messagePrefix;
     }
@@ -134,47 +128,53 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
     }
 
     @Override
-    public final void onEnable() {
-        if (!preEnable()) {
-            getLogger().severe("An error occurred whilst enabling plugin " + getName() +" !");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        enable();
-
-        if (this instanceof Listener) {
-            getServer().getPluginManager().registerEvents((Listener) this, this);
-        }
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    @Override
-    public final void onDisable() {
-        for (Module module : modules) {
-            if (module.isEnabled()) {
-                module.setEnabled(false);
+    public void setEnabled(boolean enabled) {
+        if (this.enabled) {
+            if (!enabled) {
+                for (Module module : modules) {
+                    if (module.isEnabled()) {
+                        module.setEnabled(false);
+                    }
+                }
+                disable();
+                enabled = false;
+            }
+        } else if (enabled) {
+            if (!preEnable()) {
+                error("An error occurred whilst enabling plugin " + getName() +" !");
+                return;
+            }
+            enabled = true;
+            enable();
+
+            if (this instanceof Listener) {
+                getServer().getPluginManager().registerEvents((Listener) this, plugin);
             }
         }
-        disable();
     }
 
     @Override
     public Plugin getPlugin() {
-        return this;
+        return plugin;
     }
 
-    {
-        tickTask = new TickTask(this) {
-            @Override
-            protected void tick() {
-                DicoPlugin.this.tick();
-            }
-        };
-
-        moduleTickTask = new TickTask(this) {
-            @Override
-            protected void tick() {
-                DicoPlugin.this.tickModules();
-            }
-        };
+    @Override
+    public File getDataFolder() {
+        return name.isEmpty() ? plugin.getDataFolder() : new File(plugin.getDataFolder(), name);
     }
+
+    @Override
+    public Server getServer() {
+        return plugin.getServer();
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
 }

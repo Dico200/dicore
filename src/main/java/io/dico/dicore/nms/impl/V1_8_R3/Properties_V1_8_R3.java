@@ -5,7 +5,7 @@ import net.minecraft.server.v1_8_R3.PropertyManager;
 
 import java.io.File;
 
-public class Properties_V1_8_R3 implements NProperties {
+class Properties_V1_8_R3 implements NProperties {
     private PropertyManager propertyManager;
 
     public Properties_V1_8_R3(PropertyManager propertyManager) {

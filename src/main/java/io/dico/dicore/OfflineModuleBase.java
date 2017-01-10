@@ -2,13 +2,12 @@ package io.dico.dicore;
 
 import io.dico.dicore.saving.Saveable;
 import io.dico.dicore.saving.fileadapter.FileAdapter;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-abstract class OfflineModuleBase<P extends Plugin, T> extends Module<P> implements Saveable {
+abstract class OfflineModuleBase<P extends ModuleManager, T> extends Module<P> implements Saveable {
     private T data;
     private final FileAdapter<T> fileAdapter;
     private final String file;

@@ -3,12 +3,11 @@ package io.dico.dicore;
 import com.google.gson.Gson;
 import io.dico.dicore.saving.fileadapter.FileAdapter;
 import io.dico.dicore.saving.fileadapter.GsonFileAdapter;
-import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
-public abstract class OfflineModule<P extends Plugin, T> extends OfflineModuleBase<P, T> {
+public abstract class OfflineModule<P extends ModuleManager, T> extends OfflineModuleBase<P, T> {
     private final Type typeOfT = getDataType();
 
     public OfflineModule(String name, P plugin, boolean usesConfig, boolean debugging) {

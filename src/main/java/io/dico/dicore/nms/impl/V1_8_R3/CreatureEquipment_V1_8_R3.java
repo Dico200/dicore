@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-public class CreatureEquipment_V1_8_R3 implements NCreatureEquipment {
+class CreatureEquipment_V1_8_R3 implements NCreatureEquipment {
 
     private static final ItemStack NOT_SET = new ItemStack(Material.AIR);
 

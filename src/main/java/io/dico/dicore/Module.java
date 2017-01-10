@@ -7,27 +7,15 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
 
 import java.io.*;
 
-public class Module<P extends Plugin> implements Logging {
-
-    protected void enable() {
-    };
-
-    protected void disable() {
-    };
-
-    public String getName() {
-        return name;
-    }
-
+public class Module<P extends ModuleManager> implements Logging {
     private final P plugin;
     private final String name;
     private final boolean usesConfig;
     private final boolean debugging;
-    final String baseFilename;
+    private final String baseFilename;
     private FileConfiguration config;
     private boolean enabled;
 
@@ -38,6 +26,18 @@ public class Module<P extends Plugin> implements Logging {
         this.debugging = debugging;
         baseFilename = name.toLowerCase().replace(" ", "_");
         info("Loading module " + getName());
+    }
+
+    protected void enable() {
+
+    }
+
+    protected void disable() {
+
+    }
+
+    public String getName() {
+        return name;
     }
 
     public boolean isEnabled() {
@@ -57,7 +57,7 @@ public class Module<P extends Plugin> implements Logging {
         if (enabled) {
             info("Enabling module " + getName());
             if (this instanceof Listener) {
-                Bukkit.getPluginManager().registerEvents((Listener) this, plugin);
+                Bukkit.getPluginManager().registerEvents((Listener) this, plugin.getPlugin());
             }
             Exceptions.runSafe(this::enable);
         } else {
@@ -131,18 +131,18 @@ public class Module<P extends Plugin> implements Logging {
 
     @Override
     public void error(Object o) {
-        plugin.getLogger().severe(prefix(o));
+        plugin.error(prefix(o));
     }
 
     @Override
     public void info(Object o) {
-        plugin.getLogger().info(prefix(o));
+        plugin.info(prefix(o));
     }
 
     @Override
     public void debug(Object o) {
         if (debugging) {
-            plugin.getLogger().info("[DEBUG]" + prefix(String.valueOf(o)));
+            plugin.info("[DEBUG]" + prefix(String.valueOf(o)));
         }
     }
 
@@ -159,10 +159,10 @@ public class Module<P extends Plugin> implements Logging {
     }
 
     private String toString(InputStream stream, String exceptionMessage) {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         StringBuilder retBuilder = new StringBuilder();
-        String line;
-        try {
+        try (InputStreamReader streamReader = new InputStreamReader(stream);
+             BufferedReader reader = new BufferedReader(streamReader)) {
+            String line;
             while ((line = reader.readLine()) != null) {
                 retBuilder.append(line).append("\n");
             }
