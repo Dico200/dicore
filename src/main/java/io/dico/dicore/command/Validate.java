@@ -3,51 +3,51 @@ package io.dico.dicore.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Optional;
 
 public class Validate {
-	
-	public static void isTrue(boolean expression, String failMessage) {
-		if (!expression) {
-			throw new CommandException(failMessage);
-		}
-	}
-	
-	public static void notNull(Object obj, String failMessage) {
-		if (obj == null) {
-			throw new CommandException(failMessage);
-		}
-	}
-	
-	public static void isAuthorized(CommandSender sender, String permission, String failMessage) {
-		if (!sender.hasPermission(permission)) {
-			throw new CommandException(failMessage);
-		}
-	}
-	
-	public static void isAuthorized(CommandSender sender, String permission) {
-		Validate.isAuthorized(sender, permission, "You do not have permission to use that command");
-	}
-	
-	public static void isPlayer(CommandSender sender) {
-		if (!(sender instanceof Player)) {
-			throw new CommandException("That command can only be used by players");
-		}
-	}
-	
-	public static void isConsole(CommandSender sender) {
-		if (!(sender instanceof ConsoleCommandSender)) {
-			throw new CommandException("That command can only be used by the console");
-		}
-	}
-	
-	public static <T> T returnIfPresent(Optional<T> maybe, String failMessage) {
-		return maybe.orElseThrow(() -> new CommandException(failMessage));
-	}
-	
-	private Validate() {
-		
-	}
-
+    
+    @Contract("false, _ -> fail")
+    public static void isTrue(boolean expression, String failMessage) {
+        if (!expression) {
+            throw new CommandException(failMessage);
+        }
+    }
+    
+    @Contract("null, _ -> fail")
+    public static void notNull(Object obj, String failMessage) {
+        Validate.isTrue(obj != null, failMessage);
+    }
+    
+    public static void isAuthorized(CommandSender sender, String permission, String failMessage) {
+        Validate.isTrue(sender.hasPermission(permission), failMessage);
+    }
+    
+    public static void isAuthorized(CommandSender sender, String permission) {
+        Validate.isAuthorized(sender, permission, "You do not have permission to use that command");
+    }
+    
+    @Contract("null -> fail")
+    public static void isPlayer(CommandSender sender) {
+        isTrue(sender instanceof Player, "That command can only be used by players");
+    }
+    
+    @Contract("null -> fail")
+    public static void isConsole(CommandSender sender) {
+        isTrue(sender instanceof ConsoleCommandSender, "That command can only be used by the console");
+    }
+    
+    public static <T> T returnIfPresent(Optional<T> maybe, String failMessage) {
+        if (!maybe.isPresent()) {
+            throw new CommandException(failMessage);
+        }
+        return maybe.get();
+    }
+    
+    private Validate() {
+        throw new UnsupportedOperationException();
+    }
+    
 }

@@ -22,8 +22,11 @@ public class JsonConfiguration extends FileConfiguration {
 
     @Override
     public String saveToString() {
-        try {
-            return save();
+        try (StringWriter stringWriter = new StringWriter();
+             JsonWriter writer = new JsonWriter(stringWriter)) {
+            writer.setIndent("  ");
+            JsonUtil.insert(writer, this);
+            return stringWriter.toString();
         } catch (Exception ex) {
             ExceptionHandler.log(Bukkit.getLogger()::severe, "saving config to string", ex);
             return "";
@@ -51,18 +54,9 @@ public class JsonConfiguration extends FileConfiguration {
         return null;
     }
 
-    private String save() throws IOException {
-        try (StringWriter stringWriter = new StringWriter();
-             JsonWriter writer = new JsonWriter(stringWriter)) {
-            writer.setIndent("  ");
-            JsonUtil.insert(writer, this);
-            return stringWriter.toString();
-        }
-    }
-
     // READING //
 
-    private void read(JsonReader reader, ConfigurationSection into, String key) throws IOException, InvalidConfigurationException {
+    private static void read(JsonReader reader, ConfigurationSection into, String key) throws IOException, InvalidConfigurationException {
         switch (reader.peek()) {
             case BEGIN_OBJECT:
                 readSection(reader, into.createSection(key));
@@ -84,7 +78,7 @@ public class JsonConfiguration extends FileConfiguration {
         }
     }
 
-    private void readSection(JsonReader reader, ConfigurationSection into) throws IOException, InvalidConfigurationException {
+    private static void readSection(JsonReader reader, ConfigurationSection into) throws IOException, InvalidConfigurationException {
         reader.beginObject();
         while (reader.hasNext()) {
             read(reader, into, reader.nextName());
