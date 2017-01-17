@@ -16,7 +16,6 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     private final Manager manager;
     private final String name;
     private final boolean usesConfig;
-    private final boolean debugging;
     private final String baseFilename;
     private FileConfiguration config;
     private boolean enabled;
@@ -26,7 +25,6 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         this.manager = Objects.requireNonNull(manager);
         this.name = name;
         this.usesConfig = usesConfig;
-        this.debugging = debugging;
         baseFilename = name.toLowerCase().replace(" ", "_");
     }
 
@@ -129,27 +127,6 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         }
 
         saveConfig();
-    }
-
-    private String prefix(Object o) {
-        return String.format(" [%s]%s", name, String.valueOf(o));
-    }
-
-    @Override
-    public void error(Object o) {
-        manager.error(prefix(o));
-    }
-
-    @Override
-    public void info(Object o) {
-        manager.info(prefix(o));
-    }
-
-    @Override
-    public void debug(Object o) {
-        if (debugging) {
-            manager.info(" [DEBUG]" + prefix(String.valueOf(o)));
-        }
     }
 
     private YamlConfiguration loadYaml(InputStream config, String configType) {

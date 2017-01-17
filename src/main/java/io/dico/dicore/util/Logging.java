@@ -11,6 +11,8 @@ public interface Logging {
     void debug(Object o);
     
     void setDebugging(boolean debugging);
+    
+    boolean isDebugging();
 
     class RootLogging implements Logging {
         private final String prefix;
@@ -39,14 +41,15 @@ public interface Logging {
                 root.info(String.format(" [DEBUG]%s", prefix(String.valueOf(o))));
             }
         }
+    
+        @Override
+        public boolean isDebugging() {
+            return debugging;
+        }
 
         @Override
         public void setDebugging(boolean debugging) {
             this.debugging = debugging;
-        }
-
-        public boolean isDebugging() {
-            return debugging;
         }
 
         private String prefix(Object o) {
@@ -80,6 +83,11 @@ public interface Logging {
             if (debugging) {
                 superLogger.info(String.format(" [DEBUG]%s", prefix(String.valueOf(o))));
             }
+        }
+    
+        @Override
+        public boolean isDebugging() {
+            return debugging;
         }
     
         @Override
