@@ -37,6 +37,8 @@ public interface ModuleManager extends Logging {
     void registerModule(Class<? extends Module> clazz);
 
     void registerModule(Module module);
+    
+    void registerModule(String name, Module module);
 
     TickTask getTickTask();
 

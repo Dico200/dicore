@@ -6,14 +6,14 @@ import io.dico.dicore.saving.fileadapter.JsonFileAdapter;
 
 import java.util.function.Consumer;
 
-public abstract class SimpleOfflineModule<P extends ModuleManager, T extends JsonLoadable> extends OfflineModuleBase<P, T> {
+public abstract class SimpleOfflineModule<Manager extends ModuleManager, Data extends JsonLoadable> extends OfflineModuleBase<Manager, Data> {
 
-    public SimpleOfflineModule(String name, P plugin, boolean usesConfig, boolean debugging) {
-        super(name, plugin, usesConfig, debugging);
+    protected SimpleOfflineModule(String name, Manager manager, boolean usesConfig, boolean debugging) {
+        super(name, manager, usesConfig, debugging);
     }
 
     @Override
-    FileAdapter<T> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
+    FileAdapter<Data> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
         return JsonFileAdapter.create(this::generateDefaultData, onErrorLoad, onErrorSave);
     }
 

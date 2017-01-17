@@ -4,20 +4,24 @@ import io.dico.dicore.saving.Saveable;
 import io.dico.dicore.saving.fileadapter.FileAdapter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-abstract class OfflineModuleBase<P extends ModuleManager, T> extends Module<P> implements Saveable {
-    private T data;
-    private final FileAdapter<T> fileAdapter;
+abstract class OfflineModuleBase<Manager extends ModuleManager, Data> extends Module<Manager> implements Saveable {
+    private Data data;
+    private final FileAdapter<Data> fileAdapter;
     private final String file;
     private boolean saveScheduled = false;
 
-    public OfflineModuleBase(String name, P plugin, boolean usesConfig, boolean debugging) {
-        super(name, plugin, usesConfig, debugging);
+    protected OfflineModuleBase(String name, Manager manager, boolean usesConfig, boolean debugging) {
+        super(name, manager, usesConfig, debugging);
         file = new File(getDataFolder(), "data.json").getAbsolutePath();
 
         final Consumer<Throwable> onErrorLoad = t -> {
+            if (t instanceof FileNotFoundException) {
+                return;
+            }
             error("Error occurred whilst loading data for module " + getName());
             t.printStackTrace();
         };
@@ -30,14 +34,14 @@ abstract class OfflineModuleBase<P extends ModuleManager, T> extends Module<P> i
         fileAdapter = Objects.requireNonNull(newAdapter(onErrorLoad, onErrorSave));
     }
 
-    abstract FileAdapter<T> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave);
+    abstract FileAdapter<Data> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave);
 
-    protected abstract T generateDefaultData();
+    protected abstract Data generateDefaultData();
 
     protected void onDataUpdate() {
     }
 
-    protected T getData() {
+    protected Data getData() {
         return data;
     }
 
@@ -54,7 +58,7 @@ abstract class OfflineModuleBase<P extends ModuleManager, T> extends Module<P> i
     }
 
     private void loadData() {
-        T result = fileAdapter.load(file);
+        Data result = fileAdapter.load(file);
         if (result == null) {
             if (data == null) {
                 data = generateDefaultData();

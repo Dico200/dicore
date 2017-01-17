@@ -1,6 +1,7 @@
 package io.dico.dicore;
 
 import io.dico.dicore.util.Logging;
+import io.dico.dicore.util.Registrator;
 import io.dico.dicore.util.exceptions.Exceptions;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -9,9 +10,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
 import java.io.*;
+import java.util.Objects;
 
-public class Module<P extends ModuleManager> implements Logging {
-    private final P plugin;
+public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
+    private final Manager manager;
     private final String name;
     private final boolean usesConfig;
     private final boolean debugging;
@@ -19,13 +21,13 @@ public class Module<P extends ModuleManager> implements Logging {
     private FileConfiguration config;
     private boolean enabled;
 
-    protected Module(String name, P plugin, boolean usesConfig, boolean debugging) {
-        this.plugin = plugin;
+    protected Module(String name, Manager manager, boolean usesConfig, boolean debugging) {
+        super(name, manager, debugging);
+        this.manager = Objects.requireNonNull(manager);
         this.name = name;
         this.usesConfig = usesConfig;
         this.debugging = debugging;
         baseFilename = name.toLowerCase().replace(" ", "_");
-        info("Loading module " + getName());
     }
 
     protected void enable() {
@@ -44,8 +46,12 @@ public class Module<P extends ModuleManager> implements Logging {
         return enabled;
     }
 
-    protected P getPlugin() {
-        return plugin;
+    public Manager getManager() {
+        return manager;
+    }
+    
+    public Registrator getRegistrator() {
+        return manager.getRegistrator();
     }
 
     void setEnabled(boolean enabled) {
@@ -55,13 +61,13 @@ public class Module<P extends ModuleManager> implements Logging {
 
         this.enabled = enabled;
         if (enabled) {
-            info("Enabling module " + getName());
+            info("Enabling");
             if (this instanceof Listener) {
-                Bukkit.getPluginManager().registerEvents((Listener) this, plugin.getPlugin());
+                Bukkit.getPluginManager().registerEvents((Listener) this, manager.getPlugin());
             }
             Exceptions.runSafe(this::enable);
         } else {
-            info("Disabling module " + getName());
+            info("Disabling");
             Exceptions.runSafe(this::disable);
         }
     }
@@ -72,7 +78,7 @@ public class Module<P extends ModuleManager> implements Logging {
         }
     }
 
-    protected FileConfiguration getConfig() {
+    public FileConfiguration getConfig() {
         checkUsesConfig();
         if (config == null) {
             reloadConfig();
@@ -80,8 +86,8 @@ public class Module<P extends ModuleManager> implements Logging {
         return config;
     }
 
-    protected File getDataFolder() {
-        File result = new File(plugin.getDataFolder(), baseFilename);
+    public File getDataFolder() {
+        File result = new File(manager.getDataFolder(), baseFilename);
         if (!result.exists()) {
             Exceptions.runSafe(result::mkdirs);
         }
@@ -97,14 +103,14 @@ public class Module<P extends ModuleManager> implements Logging {
         InputStream stream = Module.class.getResourceAsStream("/" + baseFilename + "-config.yml");
 
         if (stream == null) {
-            debug("Didn't find default config for module " + getName());
+            debug("Didn't find default config");
             return null;
         }
 
         return stream;
     }
 
-    protected void reloadConfig() {
+    public void reloadConfig() {
         checkUsesConfig();
 
         InputStream configStream;
@@ -126,33 +132,33 @@ public class Module<P extends ModuleManager> implements Logging {
     }
 
     private String prefix(Object o) {
-        return String.format("[%s]%s", name, String.valueOf(o));
+        return String.format(" [%s]%s", name, String.valueOf(o));
     }
 
     @Override
     public void error(Object o) {
-        plugin.error(prefix(o));
+        manager.error(prefix(o));
     }
 
     @Override
     public void info(Object o) {
-        plugin.info(prefix(o));
+        manager.info(prefix(o));
     }
 
     @Override
     public void debug(Object o) {
         if (debugging) {
-            plugin.info("[DEBUG]" + prefix(String.valueOf(o)));
+            manager.info(" [DEBUG]" + prefix(String.valueOf(o)));
         }
     }
 
     private YamlConfiguration loadYaml(InputStream config, String configType) {
         YamlConfiguration result = new YamlConfiguration();
         if (config != null) try {
-            String contents = toString(config, "Failed to load " + configType + " for module " + getName() + ", cause unknown");
+            String contents = toString(config, "Failed to load " + configType + ", cause unknown");
             result.loadFromString(contents);
         } catch (InvalidConfigurationException e) {
-            error("Failed to load " + configType + " for module " + getName() + ", it is of invalid syntax.");
+            error("Failed to load " + configType + ", it is of invalid syntax.");
             e.printStackTrace();
         }
         return result;
@@ -173,7 +179,7 @@ public class Module<P extends ModuleManager> implements Logging {
         return retBuilder.toString();
     }
 
-    protected void saveConfig() {
+    public void saveConfig() {
         checkUsesConfig();
         try {
             config.save(getConfigFile());

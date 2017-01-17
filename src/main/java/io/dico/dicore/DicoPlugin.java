@@ -16,8 +16,8 @@ import java.util.Set;
 public class DicoPlugin extends JavaPlugin implements ModuleManager {
     private final Registrator registrator;
     private final Set<Module> modules = new HashSet<>();
-    private final TickTask tickTask;
-    private final TickTask moduleTickTask;
+    private TickTask tickTask;
+    private TickTask moduleTickTask;
     private String messagePrefix;
     private boolean debugging;
 
@@ -35,22 +35,27 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
     public Registrator getRegistrator() {
         return registrator;
     }
-
+    
     @Override
     public void registerModule(Class<? extends Module> clazz) {
         Module module = Modules.newInstanceOf(clazz, this);
-        registerModule(module);
+        registerModule(clazz.getSimpleName(), module);
     }
-
+    
     @Override
     public void registerModule(Module module) {
+        registerModule(module.getName(), module);
+    }
+    
+    @Override
+    public void registerModule(String name, Module module) {
         try {
             module.setEnabled(true);
             if (module instanceof Listener) {
                 Bukkit.getPluginManager().registerEvents((Listener) module, this);
             }
         } catch (Throwable t) {
-            error("Failed to enable module " + module.getName());
+            error("Failed to enable module " + name);
             t.printStackTrace();
             return;
         }
@@ -59,11 +64,27 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
 
     @Override
     public TickTask getTickTask() {
+        if (tickTask == null) {
+            tickTask = new TickTask(this) {
+                @Override
+                protected void tick() {
+                    DicoPlugin.this.tick();
+                }
+            };
+        }
         return tickTask;
     }
 
     @Override
     public TickTask getModuleTickTask() {
+        if (moduleTickTask == null) {
+            moduleTickTask = new TickTask(this) {
+                @Override
+                protected void tick() {
+                    DicoPlugin.this.tickModules();
+                }
+            };
+        }
         return moduleTickTask;
     }
 
@@ -162,19 +183,4 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
         return this;
     }
 
-    {
-        tickTask = new TickTask(this) {
-            @Override
-            protected void tick() {
-                DicoPlugin.this.tick();
-            }
-        };
-
-        moduleTickTask = new TickTask(this) {
-            @Override
-            protected void tick() {
-                DicoPlugin.this.tickModules();
-            }
-        };
-    }
 }

@@ -20,8 +20,8 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
     private final String name;
     private final Registrator registrator;
     private final Set<Module> modules = new HashSet<>();
-    private final TickTask tickTask;
-    private final TickTask moduleTickTask;
+    private TickTask tickTask;
+    private TickTask moduleTickTask;
     private String messagePrefix;
     private boolean enabled;
 
@@ -31,20 +31,6 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
         this.name = name == null ? "" : name;
         this.registrator = (plugin instanceof DicoPlugin) ? ((DicoPlugin) plugin).getRegistrator() : new Registrator(plugin);
         messagePrefix = Formatting.translateChars('&', "&4[&c" + plugin.getName() + "&4] &a");
-
-        tickTask = new TickTask(plugin) {
-            @Override
-            protected void tick() {
-                PluginModuleAddon.this.tick();
-            }
-        };
-
-        moduleTickTask = new TickTask(plugin) {
-            @Override
-            protected void tick() {
-                PluginModuleAddon.this.tickModules();
-            }
-        };
     }
 
     @Override
@@ -60,31 +46,52 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
     @Override
     public void registerModule(Class<? extends Module> clazz) {
         Module module = Modules.newInstanceOf(clazz, this);
-        registerModule(module);
+        registerModule(clazz.getSimpleName(), module);
     }
 
     @Override
     public void registerModule(Module module) {
+        registerModule(module.getName(), module);
+    }
+    
+    @Override
+    public void registerModule(String name, Module module) {
         try {
             module.setEnabled(true);
             if (module instanceof Listener) {
                 Bukkit.getPluginManager().registerEvents((Listener) module, plugin);
             }
         } catch (Throwable t) {
-            error("Failed to enable module " + module.getName());
+            error("Failed to enable module " + name);
             t.printStackTrace();
             return;
         }
         modules.add(module);
     }
-
+    
     @Override
     public TickTask getTickTask() {
+        if (tickTask == null) {
+            tickTask = new TickTask(plugin) {
+                @Override
+                protected void tick() {
+                    PluginModuleAddon.this.tick();
+                }
+            };
+        }
         return tickTask;
     }
 
     @Override
     public TickTask getModuleTickTask() {
+        if (moduleTickTask == null) {
+            moduleTickTask = new TickTask(plugin) {
+                @Override
+                protected void tick() {
+                    PluginModuleAddon.this.tickModules();
+                }
+            };
+        }
         return moduleTickTask;
     }
 
@@ -141,14 +148,14 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
                     }
                 }
                 disable();
-                enabled = false;
+                this.enabled = false;
             }
         } else if (enabled) {
             if (!preEnable()) {
                 error("An error occurred whilst enabling plugin " + getName() +" !");
                 return;
             }
-            enabled = true;
+            this.enabled = true;
             enable();
 
             if (this instanceof Listener) {
