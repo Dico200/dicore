@@ -38,7 +38,7 @@ public interface Logging {
         @Override
         public void debug(Object o) {
             if (debugging) {
-                root.info(String.format(" [DEBUG]%s", prefix(String.valueOf(o))));
+                root.info(String.format("[DEBUG]%s", prefix(String.valueOf(o))));
             }
         }
     
