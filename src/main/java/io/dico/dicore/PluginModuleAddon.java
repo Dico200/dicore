@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class PluginModuleAddon extends Logging.RootLogging implements ModuleManager {
@@ -26,9 +27,9 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
     private boolean enabled;
 
     public PluginModuleAddon(Plugin plugin, String name) {
-        super(name == null ? "" : name, plugin.getLogger(), false);
+        super(Objects.requireNonNull(name), plugin.getLogger(), false);
         this.plugin = plugin;
-        this.name = name == null ? "" : name;
+        this.name = name;
         this.registrator = (plugin instanceof DicoPlugin) ? ((DicoPlugin) plugin).getRegistrator() : new Registrator(plugin);
         messagePrefix = Formatting.translateChars('&', "&4[&c" + plugin.getName() + "&4] &a");
     }

@@ -77,7 +77,7 @@ public class StringUtil {
             result += hours + " hours|";
         if (minutes != 0)
             result += minutes + " minutes|";
-        return enumerate(result, "|");
+        return enumerate(result, "\\|");
     }
     
     public static long getTimeLength(String input) { //if -1: error

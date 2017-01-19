@@ -13,11 +13,11 @@ abstract class OfflineModuleBase<Manager extends ModuleManager, Data> extends Mo
     private final FileAdapter<Data> fileAdapter;
     private final String file;
     private boolean saveScheduled = false;
-
+    
     protected OfflineModuleBase(String name, Manager manager, boolean usesConfig, boolean debugging) {
         super(name, manager, usesConfig, debugging);
         file = new File(getDataFolder(), "data.json").getAbsolutePath();
-
+        
         final Consumer<Throwable> onErrorLoad = t -> {
             if (t instanceof FileNotFoundException) {
                 return;
@@ -25,26 +25,26 @@ abstract class OfflineModuleBase<Manager extends ModuleManager, Data> extends Mo
             error("Error occurred whilst loading data for module " + getName());
             t.printStackTrace();
         };
-
+        
         final Consumer<Throwable> onErrorSave = t -> {
             error("Failed to save data for module " + getName());
             t.printStackTrace();
         };
-
+        
         fileAdapter = Objects.requireNonNull(newAdapter(onErrorLoad, onErrorSave));
     }
-
+    
     abstract FileAdapter<Data> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave);
-
+    
     protected abstract Data generateDefaultData();
-
-    protected void onDataUpdate() {
+    
+    protected void dataLoaded() {
     }
-
+    
     protected Data getData() {
         return data;
     }
-
+    
     public boolean isSaveScheduled() {
         if (saveScheduled) {
             saveScheduled = false;
@@ -52,12 +52,12 @@ abstract class OfflineModuleBase<Manager extends ModuleManager, Data> extends Mo
         }
         return false;
     }
-
+    
     public final void scheduleSave() {
         saveScheduled = true;
     }
-
-    private void loadData() {
+    
+    protected void loadData() {
         Data result = fileAdapter.load(file);
         if (result == null) {
             if (data == null) {
@@ -68,15 +68,15 @@ abstract class OfflineModuleBase<Manager extends ModuleManager, Data> extends Mo
         } else {
             data = result;
         }
-        onDataUpdate();
+        dataLoaded();
     }
-
-    private void saveData() {
+    
+    protected void saveData() {
         if (data != null) {
             fileAdapter.save(data, file);
         }
     }
-
+    
     @Override
     protected void update() {
         super.update();
@@ -84,18 +84,16 @@ abstract class OfflineModuleBase<Manager extends ModuleManager, Data> extends Mo
             saveData();
         }
     }
-
+    
     @Override
     void setEnabled(boolean enabled) {
-        if (enabled == isEnabled()) {
-            return;
+        if (enabled != isEnabled()) {
+            super.setEnabled(enabled);
+            
+            if (!enabled) {
+                saveData();
+            }
+            
         }
-
-        if (enabled) {
-            loadData();
-        } else {
-            saveData();
-        }
-        super.setEnabled(enabled);
     }
 }

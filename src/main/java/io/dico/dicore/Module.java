@@ -2,11 +2,15 @@ package io.dico.dicore;
 
 import io.dico.dicore.util.Logging;
 import io.dico.dicore.util.Registrator;
+import io.dico.dicore.util.exceptions.ExceptionHandler;
 import io.dico.dicore.util.exceptions.Exceptions;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import java.io.*;
@@ -19,7 +23,8 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     private final String baseFilename;
     private FileConfiguration config;
     private boolean enabled;
-
+    private boolean enabledBefore;
+    
     protected Module(String name, Manager manager, boolean usesConfig, boolean debugging) {
         super(name, manager, debugging);
         this.manager = Objects.requireNonNull(manager);
@@ -27,23 +32,31 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         this.usesConfig = usesConfig;
         baseFilename = name.toLowerCase().replace(" ", "_");
     }
-
+    
+    protected void load() {
+        
+    }
+    
     protected void enable() {
-
+        
     }
-
+    
     protected void disable() {
-
+        
     }
-
+    
+    protected void update() {
+        
+    }
+    
     public String getName() {
         return name;
     }
-
+    
     public boolean isEnabled() {
         return enabled;
     }
-
+    
     public Manager getManager() {
         return manager;
     }
@@ -51,31 +64,56 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     public Registrator getRegistrator() {
         return manager.getRegistrator();
     }
-
+    
     void setEnabled(boolean enabled) {
         if (this.enabled == enabled) {
             return;
         }
-
-        this.enabled = enabled;
+        
         if (enabled) {
-            info("Enabling");
+            this.enabled = true;
+            
+            if (!enabledBefore) {
+                enabledBefore = true;
+                try {
+                    load();
+                } catch (Exception ex) {
+                    ExceptionHandler.log(this::error, "loading", ex);
+                }
+            }
+            
+            try {
+                enable();
+                info("enabled successfully");
+            } catch (Exception ex) {
+                ExceptionHandler.log(this::error, "enabling", ex);
+            }
+    
             if (this instanceof Listener) {
                 Bukkit.getPluginManager().registerEvents((Listener) this, manager.getPlugin());
             }
-            Exceptions.runSafe(this::enable);
+            
         } else {
-            info("Disabling");
-            Exceptions.runSafe(this::disable);
+            try {
+                disable();
+            } catch (Exception ex) {
+                ExceptionHandler.log(this::error, "disabling", ex);
+            }
+            
+            this.enabled = false;
+            
+            if (this instanceof Listener) {
+                HandlerList.unregisterAll((Listener) this);
+            }
         }
     }
-
+    
     private void checkUsesConfig() {
         if (!usesConfig) {
             throw new UnsupportedOperationException("This module does not use config files.");
         }
     }
-
+    
     public FileConfiguration getConfig() {
         checkUsesConfig();
         if (config == null) {
@@ -83,7 +121,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         }
         return config;
     }
-
+    
     public File getDataFolder() {
         File result = new File(manager.getDataFolder(), baseFilename);
         if (!result.exists()) {
@@ -91,44 +129,61 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         }
         return result;
     }
-
+    
     private File getConfigFile() {
         checkUsesConfig();
         return new File(getDataFolder(), "config.yml");
     }
-
+    
     private InputStream getDefaultConfigFile() {
         InputStream stream = Module.class.getResourceAsStream("/" + baseFilename + "-config.yml");
-
+        
         if (stream == null) {
             debug("Didn't find default config");
             return null;
         }
-
+        
         return stream;
     }
-
+    
     public void reloadConfig() {
         checkUsesConfig();
-
-        InputStream configStream;
-        try {
-            configStream = new FileInputStream(getConfigFile());
-        } catch (FileNotFoundException e) {
-            configStream = null;
+        
+        try (InputStream stream = new FileInputStream(getConfigFile())) {
+            config = loadYaml(stream, "config");
+        } catch (IOException ex) {
+            if (ex instanceof FileNotFoundException) {
+                
+                try (InputStream in = getDefaultConfigFile();
+                     OutputStream out = new FileOutputStream(getConfigFile())) {
+                    if (in != null) {
+                        IOUtils.copy(in, out);
+                    }
+                } catch (IOException ex2) {
+                    ExceptionHandler.log(this::error, "writing default config", ex2);
+                }
+                
+            } else {
+                ExceptionHandler.log(this::error, "loading config", ex);
+            }
+            
+            if (config == null) {
+                config = new YamlConfiguration();
+            }
         }
-
-        config = loadYaml(configStream, "config");
-
-        final InputStream defaultConfigStream = getDefaultConfigFile();
-        if (defaultConfigStream != null) {
-            config.setDefaults(loadYaml(defaultConfigStream, "default config"));
-            config.options().copyDefaults(true);
+        
+        try (InputStream stream = getDefaultConfigFile()) {
+            if (stream != null) {
+                Configuration defaults = loadYaml(stream, "default config");
+                config.setDefaults(defaults);
+                config.options().copyDefaults(true);
+            }
+        } catch (IOException ex) {
+            ExceptionHandler.log(this::error, "loading default config", ex);
         }
-
-        saveConfig();
+        
     }
-
+    
     private YamlConfiguration loadYaml(InputStream config, String configType) {
         YamlConfiguration result = new YamlConfiguration();
         if (config != null) try {
@@ -140,7 +195,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         }
         return result;
     }
-
+    
     private String toString(InputStream stream, String exceptionMessage) {
         StringBuilder retBuilder = new StringBuilder();
         try (InputStreamReader streamReader = new InputStreamReader(stream);
@@ -155,16 +210,16 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         }
         return retBuilder.toString();
     }
-
+    
     public void saveConfig() {
         checkUsesConfig();
         try {
             config.save(getConfigFile());
-        } catch (IOException e) {
-            error("Failed to save config file for " + getName());
+        } catch (IOException ex) {
+            ExceptionHandler.log(this::error, "saving config", ex);
         }
     }
-
+    
     //
     //Abuse hashing to prevent modules with duplicate filenames.
     //
@@ -172,18 +227,14 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     public int hashCode() {
         return baseFilename.hashCode();
     }
-
+    
     @Override
     public boolean equals(Object other) {
         return other instanceof Module && nameInterferesWith((Module) other);
     }
-
+    
     private boolean nameInterferesWith(Module other) {
         return baseFilename.equals(other.baseFilename);
     }
-
-    protected void update() {
-
-    }
-
+    
 }

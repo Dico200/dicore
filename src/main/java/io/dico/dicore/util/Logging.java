@@ -3,11 +3,13 @@ package io.dico.dicore.util;
 import java.util.logging.Logger;
 
 public interface Logging {
-
-    void error(Object o);
-
+    
     void info(Object o);
-
+    
+    void warn(Object o);
+    
+    void error(Object o);
+    
     void debug(Object o);
     
     void setDebugging(boolean debugging);
@@ -26,19 +28,24 @@ public interface Logging {
         }
 
         @Override
-        public void error(Object o) {
-            root.severe(prefix(String.valueOf(o)));
-        }
-
-        @Override
         public void info(Object o) {
-            root.info(prefix(String.valueOf(o)));
+            root.info(prefix(o));
+        }
+    
+        @Override
+        public void warn(Object o) {
+            root.warning(prefix(o));
+        }
+    
+        @Override
+        public void error(Object o) {
+            root.severe(prefix(o));
         }
 
         @Override
         public void debug(Object o) {
             if (debugging) {
-                root.info(String.format("[DEBUG]%s", prefix(String.valueOf(o))));
+                root.info(String.format("[DEBUG] %s", prefix(o)));
             }
         }
     
@@ -53,7 +60,7 @@ public interface Logging {
         }
 
         private String prefix(Object o) {
-            return String.format(" [%s]%s", prefix, String.valueOf(o));
+            return String.format("[%s] %s", prefix, String.valueOf(o));
         }
     }
 
@@ -69,19 +76,24 @@ public interface Logging {
         }
 
         @Override
-        public void error(Object o) {
-            superLogger.error(prefix(String.valueOf(o)));
-        }
-
-        @Override
         public void info(Object o) {
-            superLogger.info(prefix(String.valueOf(o)));
+            superLogger.info(prefix(o));
+        }
+    
+        @Override
+        public void warn(Object o) {
+            superLogger.warn(prefix(o));
+        }
+    
+        @Override
+        public void error(Object o) {
+            superLogger.error(prefix(o));
         }
 
         @Override
         public void debug(Object o) {
             if (debugging) {
-                superLogger.info(String.format(" [DEBUG]%s", prefix(String.valueOf(o))));
+                superLogger.info(String.format("[DEBUG] %s", prefix(o)));
             }
         }
     
@@ -96,7 +108,7 @@ public interface Logging {
         }
     
         private String prefix(Object o) {
-            return String.format(" [%s]%s", prefix, String.valueOf(o));
+            return String.format("[%s] %s", prefix, String.valueOf(o));
         }
 
     }

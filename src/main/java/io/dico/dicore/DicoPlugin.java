@@ -118,13 +118,18 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
     }
 
     @Override
-    public void error(Object o) {
-        getLogger().severe(String.valueOf(o));
-    }
-
-    @Override
     public void info(Object o) {
         getLogger().info(String.valueOf(o));
+    }
+    
+    @Override
+    public void warn(Object o) {
+        getLogger().warning(String.valueOf(o));
+    }
+    
+    @Override
+    public void error(Object o) {
+        getLogger().severe(String.valueOf(o));
     }
 
     @Override

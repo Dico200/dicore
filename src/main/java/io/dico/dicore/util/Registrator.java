@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class Registrator implements Listener {
-
     private Plugin plugin;
     private ListMultimap<HandlerList, RegisteredListener> listeners = LinkedListMultimap.create();
     private List<Listener> myListeners = new ArrayList<>(Collections.singletonList(this));
