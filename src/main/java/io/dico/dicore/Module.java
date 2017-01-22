@@ -71,6 +71,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         }
         
         if (enabled) {
+            config = null;
             this.enabled = true;
             
             if (!enabledBefore) {

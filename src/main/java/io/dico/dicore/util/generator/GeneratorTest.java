@@ -12,7 +12,7 @@ public class GeneratorTest extends TestCase {
     public void testGenerator() {
 
         Set<String> set = new HashSet<>();
-        for (String string : PreparingGenerator.<String>generator(() -> {
+        for (String string : AwesomeGenerator.<String>generator(() -> {
             System.out.println("hi");
             doYield("x");
             System.out.println("hi");
