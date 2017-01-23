@@ -20,11 +20,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public class SpigotUtil {
-
+    
     private SpigotUtil() {
         throw new UnsupportedOperationException();
     }
-
+    
     public static World matchWorld(String input) {
         try {
             UUID uid = UUID.fromString(input);
@@ -32,8 +32,9 @@ public class SpigotUtil {
             if (world != null) {
                 return world;
             }
-        } catch (IllegalArgumentException ignored) {}
-
+        } catch (IllegalArgumentException ignored) {
+        }
+        
         World result = Bukkit.getWorld(input);
         if (result == null) {
             input = input.toLowerCase().replace("_", "").replaceAll("-|_", "");
@@ -44,10 +45,10 @@ public class SpigotUtil {
                 }
             }
         }
-
+        
         return result;
     }
-
+    
     public static Block getSupportingBlock(Block block) {
         MaterialData data = block.getState().getData();
         if (data instanceof Attachable) {
@@ -56,11 +57,11 @@ public class SpigotUtil {
         }
         return null;
     }
-
+    
     public static boolean isItemPresent(ItemStack stack) {
         return stack != null && stack.getType() != Material.AIR && stack.getAmount() > 0;
     }
-
+    
     public static boolean removeItems(Inventory from, ItemStack item, int amount) {
         for (Map.Entry<Integer, ? extends ItemStack> entry : from.all(item.getType()).entrySet()) {
             ItemStack stack = entry.getValue();
@@ -76,7 +77,7 @@ public class SpigotUtil {
         }
         return amount <= 0;
     }
-
+    
     public static BlockFace yawToFace(float yaw) {
         if ((yaw %= 360) < 0)
             yaw += 360;
@@ -88,7 +89,7 @@ public class SpigotUtil {
             return BlockFace.EAST;
         return BlockFace.SOUTH;
     }
-
+    
     public static void addItems(InventoryHolder entity, ItemStack... items) {
         Location dropLocation;
         if (entity instanceof Entity) {
@@ -103,11 +104,11 @@ public class SpigotUtil {
             world.dropItemNaturally(dropLocation, toDrop);
         }
     }
-
+    
     public static String asJsonString(Object object) {
         return asJsonString(null, object, 0);
     }
-
+    
     public static String asJsonString(String key, Object object, int indentation) {
         String indent = new String(new char[indentation * 2]).replace('\0', ' ');
         StringBuilder builder = new StringBuilder(indent);
@@ -136,5 +137,5 @@ public class SpigotUtil {
         }
         return builder.append(",\n").toString();
     }
-
+    
 }

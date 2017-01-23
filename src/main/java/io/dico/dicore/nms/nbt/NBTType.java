@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum NBTType {
-
+    
     BYTE(Byte.class),
     SHORT(Short.class),
     INT(Integer.class),
@@ -23,7 +23,7 @@ public enum NBTType {
     INT_ARRAY(int[].class),
     LIST(nbtListClass()),
     MAP(nbtMapClass());
-
+    
     public static NBTType valueOf(Class<?> clazz) {
         NBTType result = map.get(clazz);
         if (result == null) {
@@ -31,7 +31,7 @@ public enum NBTType {
         }
         return result;
     }
-
+    
     public static NBTList newNBTList() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
@@ -40,13 +40,13 @@ public enum NBTType {
                 return new NBTList_UNKNOWN();
         }
     }
-
+    
     public static NBTList newNBTList(Collection<Object> list) {
         NBTList result = newNBTList();
         result.addAll(list);
         return result;
     }
-
+    
     public static NBTMap newNBTMap() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
@@ -55,13 +55,13 @@ public enum NBTType {
                 return new NBTMap_UNKNOWN();
         }
     }
-
+    
     public static NBTMap newNBTMap(Map<String, Object> map) {
         NBTMap result = newNBTMap();
         result.putAll(map);
         return result;
     }
-
+    
     private static Class<? extends NBTMap> nbtMapClass() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
@@ -70,7 +70,7 @@ public enum NBTType {
                 return NBTMap_UNKNOWN.class;
         }
     }
-
+    
     private static Class<? extends NBTList> nbtListClass() {
         switch (NDriver.Version.getInstance()) {
             case V1_8_R3:
@@ -79,24 +79,24 @@ public enum NBTType {
                 return NBTList_UNKNOWN.class;
         }
     }
-
+    
     private static Map<Class<?>, NBTType> map;
     private final Class<?> clazz;
-
+    
     NBTType(Class<?> clazz) {
         this.clazz = clazz;
         add();
     }
-
+    
     private void add() {
         if (map == null) {
             map = new HashMap<>();
         }
         map.put(clazz, this);
     }
-
+    
     public Class<?> getType() {
         return clazz;
     }
-
+    
 }

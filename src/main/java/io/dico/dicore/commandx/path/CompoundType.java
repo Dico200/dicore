@@ -5,7 +5,4 @@ public interface CompoundType {
     String pattern();
 
 
-
-
-
 }

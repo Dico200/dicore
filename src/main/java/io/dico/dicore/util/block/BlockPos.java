@@ -537,7 +537,7 @@ public final class BlockPos implements Block, Comparable<BlockPos>, Serializable
 
     @Override
     public Location getLocation(Location loc) {
-        if(loc != null) {
+        if (loc != null) {
             loc.setWorld(getWorld());
             loc.setX(x);
             loc.setY(y);

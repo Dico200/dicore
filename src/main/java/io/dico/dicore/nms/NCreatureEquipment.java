@@ -9,6 +9,7 @@ public interface NCreatureEquipment {
 
     /**
      * Gets an item
+     *
      * @param index the index, between 0 and 5.
      * @return the item at this slot
      * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
@@ -17,8 +18,9 @@ public interface NCreatureEquipment {
 
     /**
      * Sets an item
+     *
      * @param index the index, between 0 and 5.
-     * @param item the item to set at this slot
+     * @param item  the item to set at this slot
      * @throws ArrayIndexOutOfBoundsException if the index is out of bounds
      */
     void setItem(int index, ItemStack item);
@@ -33,6 +35,7 @@ public interface NCreatureEquipment {
      * Returns the equipment of this entity
      * Changes to entries will usually be reflected on the entity.
      * This is not a guarantee, for a guaranteed result use one of the set methods.
+     *
      * @return an ItemStack[5] of equipment
      */
     default ItemStack[] getItems() {

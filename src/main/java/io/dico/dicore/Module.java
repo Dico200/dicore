@@ -89,7 +89,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
             } catch (Exception ex) {
                 ExceptionHandler.log(this::error, "enabling", ex);
             }
-    
+            
             if (this instanceof Listener) {
                 Bukkit.getPluginManager().registerEvents((Listener) this, manager.getPlugin());
             }

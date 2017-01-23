@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class JsonUtil {
-
+    
     public static void writeItemStack(JsonWriter writer, ItemStack stack) throws IOException {
         writer.beginObject();
         writer.name("type").value(stack.getType().toString());
@@ -25,11 +25,11 @@ public class JsonUtil {
             writer.name("data").value(stack.getData().getData());
         }
         if (stack.hasItemMeta()) {
-
+            
             writer.name("meta");
             writer.beginObject();
             ItemMeta meta = new DynamicEnchantmentMeta(stack.getItemMeta());
-
+            
             if (meta.hasEnchants()) {
                 writer.name("enchantments");
                 writer.beginObject();
@@ -38,7 +38,7 @@ public class JsonUtil {
                 }
                 writer.endObject();
             }
-
+            
             if (meta.hasLore()) {
                 writer.name("lore");
                 writer.beginArray();
@@ -47,15 +47,15 @@ public class JsonUtil {
                 }
                 writer.endArray();
             }
-
+            
             if (meta.hasDisplayName()) {
                 writer.name("title").value(meta.getDisplayName());
             }
-
+            
             if (meta.spigot().isUnbreakable()) {
                 writer.name("unbreakable").value(true);
             }
-
+            
             Set<ItemFlag> flags = meta.getItemFlags();
             if (flags != null && !flags.isEmpty()) {
                 writer.name("flags");
@@ -65,15 +65,15 @@ public class JsonUtil {
                 }
                 writer.endArray();
             }
-
+            
         }
-
+        
         if (stack.getDurability() != 0) {
             writer.name("durability").value(stack.getDurability());
         }
         writer.endObject();
     }
-
+    
     public static ItemStack readItemStack(JsonReader reader) throws IOException {
         Object object = read(reader);
         if (object instanceof Map) {
@@ -81,18 +81,18 @@ public class JsonUtil {
                 Map<String, Object> map = (Map<String, Object>) object;
                 Material type = Material.valueOf((String) map.get("type"));
                 if (type == null) return null;
-
+                
                 ItemStack result = new ItemStack(type);
-
+                
                 result.setAmount(((Number) map.getOrDefault("amount", 1)).intValue());
                 result.getData().setData(((Number) map.getOrDefault("data", 0)).byteValue());
                 result.setDurability(((Number) map.getOrDefault("durability", 0)).shortValue());
-
+                
                 object = map.get("meta");
                 if (object != null && object instanceof Map) {
                     ItemMeta meta = new DynamicEnchantmentMeta(result.getItemMeta());
                     Map<String, Object> metaMap = (Map<String, Object>) object;
-
+                    
                     Object objectEnchantments = metaMap.get("enchantments");
                     if (objectEnchantments != null && objectEnchantments instanceof Map) {
                         Map<String, Object> enchantments = (Map<String, Object>) objectEnchantments;
@@ -104,45 +104,45 @@ public class JsonUtil {
                             }
                         }
                     }
-
+                    
                     object = metaMap.get("lore");
                     if (object != null && object instanceof Collection) {
                         List<String> lore = (List<String>) object;
                         meta.setLore(lore);
                     }
-
+                    
                     object = metaMap.get("title");
                     if (object != null && object instanceof String) {
                         meta.setDisplayName((String) object);
                     }
-
+                    
                     object = metaMap.get("unbreakable");
                     if (object != null && object instanceof Boolean) {
                         meta.spigot().setUnbreakable((Boolean) object);
                     }
-
+                    
                     object = metaMap.get("flags");
                     if (object != null && object instanceof Collection) {
                         Collection<ItemFlag> flags = (Collection<ItemFlag>) object;
                         meta.addItemFlags(flags.toArray(new ItemFlag[flags.size()]));
                     }
                 }
-
+                
                 return result;
             } catch (Throwable t) {
                 return null;
             }
         }
-
+        
         return null;
     }
-
+    
     public static Object read(JsonReader reader) throws IOException {
-
+        
         switch (reader.peek()) {
             case BEGIN_OBJECT:
                 Map<String, Object> object = new HashMap<>();
-
+                
                 reader.beginObject();
                 while (reader.hasNext()) {
                     final String key = reader.nextName();
@@ -150,18 +150,18 @@ public class JsonUtil {
                     object.put(key, value);
                 }
                 reader.endObject();
-
+                
                 return object;
             case BEGIN_ARRAY:
                 Collection<Object> collection = new ArrayList<>();
-
+                
                 reader.beginArray();
                 while (reader.hasNext()) {
                     final Object item = read(reader);
                     collection.add(item);
                 }
                 reader.endArray();
-
+                
                 return collection;
             case BOOLEAN:
                 return reader.nextBoolean();
@@ -175,16 +175,16 @@ public class JsonUtil {
             default:
                 throw new IllegalStateException();
         }
-
+        
     }
-
+    
     public static void insert(JsonWriter writer, Object value) throws IOException {
         if (value instanceof ConfigurationSerializable) {
             value = ((ConfigurationSerializable) value).serialize();
         } else if (value instanceof ConfigurationSection) {
             value = ((ConfigurationSection) value).getValues(false);
         }
-
+        
         if (value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;
             writer.beginObject();
@@ -210,6 +210,6 @@ public class JsonUtil {
             throw new IllegalArgumentException("value not a String, Map, Number or Boolean");
         }
     }
-
+    
 }
 

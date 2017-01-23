@@ -3,10 +3,11 @@ package io.dico.dicore.util;
 import io.dico.dicore.command.Formatting;
 
 public class StringUtil {
-
+    
     /**
      * Capitalizes the first character of the string or the first character of each word
-     * @param input the string to capitalize
+     *
+     * @param input     the string to capitalize
      * @param spaceChar the character separating each word. If @code '\0' is passed, only the first character of
      *                  the input is capitalized.
      * @return the capitalized string
@@ -29,10 +30,11 @@ public class StringUtil {
         }
         return new String(result);
     }
-
+    
     /**
      * Returns a lowercase version of the input with _ replaces with a space. Mainly used for making
      * names of enum constants readable.
+     *
      * @param input
      * @return a humanified version of @code input
      */
@@ -63,8 +65,8 @@ public class StringUtil {
     
     public static String getTimeLength(long length) {
         int minute = 60000; // in millis
-        int hour = 60*minute;
-        int day = 24*hour;
+        int hour = 60 * minute;
+        int day = 24 * hour;
         
         int minutes = (int) ((length / minute) % 60);
         int hours = (int) ((length / hour) % 24);
@@ -126,7 +128,7 @@ public class StringUtil {
                 return -1;
         }
     }
-
+    
     public static String replaceKeepColours(String target, String toReplace, String with) {
         int index = -toReplace.length();
         while ((index = target.indexOf(toReplace, index + toReplace.length())) != -1) {
@@ -142,5 +144,5 @@ public class StringUtil {
         }
         return target;
     }
-
+    
 }

@@ -20,17 +20,17 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
     private TickTask moduleTickTask;
     private String messagePrefix;
     private boolean debugging;
-
+    
     public DicoPlugin() {
         registrator = new Registrator(this);
         messagePrefix = Formatting.translateChars('&', "&4[&c" + getName() + "&4] &a");
     }
-
+    
     @Override
     public Set<Module> getModules() {
         return Collections.unmodifiableSet(modules);
     }
-
+    
     @Override
     public Registrator getRegistrator() {
         return registrator;
@@ -61,7 +61,7 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
         }
         modules.add(module);
     }
-
+    
     @Override
     public TickTask getTickTask() {
         if (tickTask == null) {
@@ -74,7 +74,7 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
         }
         return tickTask;
     }
-
+    
     @Override
     public TickTask getModuleTickTask() {
         if (moduleTickTask == null) {
@@ -87,23 +87,23 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
         }
         return moduleTickTask;
     }
-
+    
     protected boolean preEnable() {
         return true;
     }
-
+    
     protected void enable() {
-
+        
     }
-
+    
     protected void disable() {
-
+        
     }
-
+    
     protected void tick() {
-
+        
     }
-
+    
     protected void tickModules() {
         for (Module module : modules) {
             if (module.isEnabled()) {
@@ -116,7 +116,7 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
             }
         }
     }
-
+    
     @Override
     public void info(Object o) {
         getLogger().info(String.valueOf(o));
@@ -131,48 +131,48 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
     public void error(Object o) {
         getLogger().severe(String.valueOf(o));
     }
-
+    
     @Override
     public void debug(Object o) {
         if (debugging) {
             getLogger().info(String.format("[DEBUG] %s", String.valueOf(o)));
         }
     }
-
+    
     @Override
     public boolean isDebugging() {
         return debugging;
     }
-
+    
     @Override
     public void setDebugging(boolean debugging) {
         this.debugging = debugging;
     }
-
+    
     @Override
     public String getMessagePrefix() {
         return messagePrefix;
     }
-
+    
     @Override
     public void setMessagePrefix(String prefix) {
         this.messagePrefix = prefix == null ? "" : prefix;
     }
-
+    
     @Override
     public final void onEnable() {
         if (!preEnable()) {
-            getLogger().severe("An error occurred whilst enabling plugin " + getName() +" !");
+            getLogger().severe("An error occurred whilst enabling plugin " + getName() + " !");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         enable();
-
+        
         if (this instanceof Listener) {
             getServer().getPluginManager().registerEvents((Listener) this, this);
         }
     }
-
+    
     @Override
     public final void onDisable() {
         for (Module module : modules) {
@@ -182,10 +182,10 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
         }
         disable();
     }
-
+    
     @Override
     public Plugin getPlugin() {
         return this;
     }
-
+    
 }

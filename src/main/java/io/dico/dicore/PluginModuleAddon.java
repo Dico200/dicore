@@ -25,7 +25,7 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
     private TickTask moduleTickTask;
     private String messagePrefix;
     private boolean enabled;
-
+    
     public PluginModuleAddon(Plugin plugin, String name) {
         super(Objects.requireNonNull(name), plugin.getLogger(), false);
         this.plugin = plugin;
@@ -33,23 +33,23 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
         this.registrator = (plugin instanceof DicoPlugin) ? ((DicoPlugin) plugin).getRegistrator() : new Registrator(plugin);
         messagePrefix = Formatting.translateChars('&', "&4[&c" + plugin.getName() + "&4] &a");
     }
-
+    
     @Override
     public Set<Module> getModules() {
         return Collections.unmodifiableSet(modules);
     }
-
+    
     @Override
     public Registrator getRegistrator() {
         return registrator;
     }
-
+    
     @Override
     public void registerModule(Class<? extends Module> clazz) {
         Module module = Modules.newInstanceOf(clazz, this);
         registerModule(clazz.getSimpleName(), module);
     }
-
+    
     @Override
     public void registerModule(Module module) {
         registerModule(module.getName(), module);
@@ -82,7 +82,7 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
         }
         return tickTask;
     }
-
+    
     @Override
     public TickTask getModuleTickTask() {
         if (moduleTickTask == null) {
@@ -95,23 +95,23 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
         }
         return moduleTickTask;
     }
-
+    
     protected boolean preEnable() {
         return true;
     }
-
+    
     protected void enable() {
-
+        
     }
-
+    
     protected void disable() {
-
+        
     }
-
+    
     protected void tick() {
-
+        
     }
-
+    
     protected void tickModules() {
         for (Module module : modules) {
             if (module.isEnabled()) {
@@ -124,22 +124,22 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
             }
         }
     }
-
+    
     @Override
     public String getMessagePrefix() {
         return messagePrefix;
     }
-
+    
     @Override
     public void setMessagePrefix(String prefix) {
         this.messagePrefix = prefix == null ? "" : prefix;
     }
-
+    
     @Override
     public boolean isEnabled() {
         return enabled;
     }
-
+    
     public void setEnabled(boolean enabled) {
         if (this.enabled) {
             if (!enabled) {
@@ -153,36 +153,36 @@ public class PluginModuleAddon extends Logging.RootLogging implements ModuleMana
             }
         } else if (enabled) {
             if (!preEnable()) {
-                error("An error occurred whilst enabling plugin " + getName() +" !");
+                error("An error occurred whilst enabling plugin " + getName() + " !");
                 return;
             }
             this.enabled = true;
             enable();
-
+            
             if (this instanceof Listener) {
                 getServer().getPluginManager().registerEvents((Listener) this, plugin);
             }
         }
     }
-
+    
     @Override
     public Plugin getPlugin() {
         return plugin;
     }
-
+    
     @Override
     public File getDataFolder() {
         return name.isEmpty() ? plugin.getDataFolder() : new File(plugin.getDataFolder(), name);
     }
-
+    
     @Override
     public Server getServer() {
         return plugin.getServer();
     }
-
+    
     @Override
     public String getName() {
         return name;
     }
-
+    
 }

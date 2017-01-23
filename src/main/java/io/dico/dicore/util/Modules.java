@@ -17,11 +17,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Modules {
-
+    
     private Modules() {
         throw new UnsupportedOperationException();
     }
-
+    
     private static String getModuleName(Class<? extends Module> moduleClass) {
         String[] split = moduleClass.getName().split("\\.");
         String name = split[split.length - 1];
@@ -32,12 +32,12 @@ public class Modules {
         }
         return name;
     }
-
+    
     public static Module newInstanceOf(Class<? extends Module> moduleClass, ModuleManager inst) {
         if (!inst.isEnabled()) {
             inst.error("Attempted to register module " + moduleClass.getCanonicalName() + " but the plugin is not enabled");
         }
-
+        
         for (Constructor<?> ctor : moduleClass.getConstructors()) {
             Class<?>[] params = ctor.getParameterTypes();
             if (params.length == 0) {
@@ -68,20 +68,20 @@ public class Modules {
                 }
             }
         }
-
+        
         inst.error("module class " + moduleClass.getCanonicalName() + " does not declare any recognized public constructors. Any of the following work:");
         inst.error("(no parameters), (" + inst.getClass().getCanonicalName() + ") or (String, " + inst.getClass().getCanonicalName() + ", boolean, boolean");
         return null;
     }
-
+    
     public static <T extends JsonLoadable> FileAdapter<T> newJsonFileAdapter(Logging logging, String usage, Supplier<T> supplier) {
         Consumer<Exception> onError = ex -> ExceptionHandler.log(logging::error, "loading or saving " + usage, ex);
         return JsonFileAdapter.create(supplier, onError, onError);
     }
-
+    
     public static <T> FileAdapter<T> newGsonFileAdapter(Logging logging, Type typeOfT, String usage, TypeAdapter<? super T> typeAdapter) {
         Consumer<Exception> onError = ex -> ExceptionHandler.log(logging::error, "loading or saving " + usage, ex);
         return GsonFileAdapter.create(typeOfT, new GsonBuilder().setPrettyPrinting().registerTypeAdapter(typeOfT, typeAdapter).create(), onError, onError);
     }
-
+    
 }

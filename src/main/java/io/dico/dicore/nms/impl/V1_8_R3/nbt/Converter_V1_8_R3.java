@@ -6,11 +6,11 @@ import io.dico.dicore.nms.nbt.NBTType;
 import net.minecraft.server.v1_8_R3.*;
 
 public final class Converter_V1_8_R3 {
-
+    
     private Converter_V1_8_R3() {
         throw new UnsupportedOperationException();
     }
-
+    
     public static Object fromNMS(NBTBase base) {
         if (base == null) {
             return null;
@@ -44,9 +44,9 @@ public final class Converter_V1_8_R3 {
                 return null;
         }
     }
-
+    
     public static NBTType getElementType(int typeId) {
-        switch(typeId) {
+        switch (typeId) {
             case 1:
                 return NBTType.BYTE;
             case 2:
@@ -73,7 +73,7 @@ public final class Converter_V1_8_R3 {
                 return null;
         }
     }
-
+    
     public static NBTBase toNMS(Object object) {
         if (object == null) {
             return null;
@@ -117,5 +117,5 @@ public final class Converter_V1_8_R3 {
                 return null;
         }
     }
-
+    
 }
