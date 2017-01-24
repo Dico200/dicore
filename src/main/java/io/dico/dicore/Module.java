@@ -137,13 +137,12 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     }
     
     private InputStream getDefaultConfigFile() {
-        InputStream stream = Module.class.getResourceAsStream("/" + baseFilename + "-config.yml");
-        
+        String name = "/" + baseFilename + "-config.yml";
+        //debug("Default config: " + name);
+        InputStream stream = Module.class.getResourceAsStream(name);
         if (stream == null) {
             debug("Didn't find default config");
-            return null;
         }
-        
         return stream;
     }
     
