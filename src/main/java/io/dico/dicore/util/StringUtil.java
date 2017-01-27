@@ -99,7 +99,7 @@ public class StringUtil {
                 if (displayedAmount == 1) {
                     unitWord = unitWord.substring(0, unitWord.length() - 1);
                 }
-                segments.add(displayedAmount + ' ' + unitWord);
+                segments.add(displayedAmount + " " + unitWord);
             }
         }
         return segments.isEmpty() ? ifEmpty : enumerate(segments.toArray(new String[segments.size()]));

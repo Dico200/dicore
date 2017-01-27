@@ -138,10 +138,10 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     
     private InputStream getDefaultConfigFile() {
         String name = "/module-configs/" + baseFilename + ".yml";
-        //debug("Default config: " + name);
+        info("Default config: " + name);
         InputStream stream = Module.class.getResourceAsStream(name);
         if (stream == null) {
-            debug("Didn't find default config");
+            info("Didn't find default config");
         }
         return stream;
     }
@@ -151,25 +151,24 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         
         try (InputStream stream = new FileInputStream(getConfigFile())) {
             config = loadYaml(stream, "config");
-        } catch (IOException ex) {
-            if (ex instanceof FileNotFoundException) {
-                
-                try (InputStream in = getDefaultConfigFile();
-                     OutputStream out = new FileOutputStream(getConfigFile())) {
-                    if (in != null) {
-                        IOUtils.copy(in, out);
-                    }
-                } catch (IOException ex2) {
-                    ExceptionHandler.log(this::error, "writing default config", ex2);
+        } catch (FileNotFoundException ex) {
+            try (InputStream in = getDefaultConfigFile();
+                 OutputStream out = new FileOutputStream(getConfigFile())) {
+                if (in != null) {
+                    IOUtils.copy(in, out);
+                    info("Wrote default config");
+                } else {
+                    info("Default config does not exist");
                 }
-                
-            } else {
-                ExceptionHandler.log(this::error, "loading config", ex);
+            } catch (IOException ex2) {
+                ExceptionHandler.log(this::error, "writing default config", ex2);
             }
-            
-            if (config == null) {
-                config = new YamlConfiguration();
-            }
+        } catch (IOException ex) {
+            ExceptionHandler.log(this::error, "loading config", ex);
+        }
+        
+        if (config == null) {
+            config = new YamlConfiguration();
         }
         
         try (InputStream stream = getDefaultConfigFile()) {

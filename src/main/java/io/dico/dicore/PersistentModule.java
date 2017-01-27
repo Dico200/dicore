@@ -7,10 +7,10 @@ import io.dico.dicore.saving.fileadapter.GsonFileAdapter;
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
-public abstract class OfflineModule<Manager extends ModuleManager, Data> extends OfflineModuleBase<Manager, Data> {
+public abstract class PersistentModule<Manager extends ModuleManager, Data> extends PersistentModuleBase<Manager, Data> {
     private final Type typeOfT = getDataType();
     
-    protected OfflineModule(String name, Manager manager, boolean usesConfig, boolean debugging) {
+    protected PersistentModule(String name, Manager manager, boolean usesConfig, boolean debugging) {
         super(name, manager, usesConfig, debugging);
     }
     
