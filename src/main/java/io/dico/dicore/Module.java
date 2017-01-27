@@ -138,12 +138,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     
     private InputStream getDefaultConfigFile() {
         String name = "/module-configs/" + baseFilename + ".yml";
-        info("Default config: " + name);
-        InputStream stream = Module.class.getResourceAsStream(name);
-        if (stream == null) {
-            info("Didn't find default config");
-        }
-        return stream;
+        return getClass().getResourceAsStream(name);
     }
     
     public void reloadConfig() {
@@ -156,9 +151,9 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
                  OutputStream out = new FileOutputStream(getConfigFile())) {
                 if (in != null) {
                     IOUtils.copy(in, out);
-                    info("Wrote default config");
+                    debug("Wrote default config");
                 } else {
-                    info("Default config does not exist");
+                    warn("Default config does not exist");
                 }
             } catch (IOException ex2) {
                 ExceptionHandler.log(this::error, "writing default config", ex2);
@@ -175,7 +170,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
             if (stream != null) {
                 Configuration defaults = loadYaml(stream, "default config");
                 config.setDefaults(defaults);
-                config.options().copyDefaults(true);
+                config.options().copyDefaults(true);*
             }
         } catch (IOException ex) {
             ExceptionHandler.log(this::error, "loading default config", ex);
