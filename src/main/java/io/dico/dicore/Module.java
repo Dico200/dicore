@@ -170,7 +170,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
             if (stream != null) {
                 Configuration defaults = loadYaml(stream, "default config");
                 config.setDefaults(defaults);
-                config.options().copyDefaults(true);*
+                config.options().copyDefaults(true);
             }
         } catch (IOException ex) {
             ExceptionHandler.log(this::error, "loading default config", ex);
