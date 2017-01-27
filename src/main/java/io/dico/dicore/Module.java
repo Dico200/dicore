@@ -30,7 +30,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
         this.manager = Objects.requireNonNull(manager);
         this.name = name;
         this.usesConfig = usesConfig;
-        baseFilename = name.toLowerCase().replace(" ", "_");
+        baseFilename = name.toLowerCase().replaceAll("_| |-", "");
     }
     
     protected void load() {
@@ -137,7 +137,7 @@ public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
     }
     
     private InputStream getDefaultConfigFile() {
-        String name = "/" + baseFilename + "-config.yml";
+        String name = "/module-configs/" + baseFilename + ".yml";
         //debug("Default config: " + name);
         InputStream stream = Module.class.getResourceAsStream(name);
         if (stream == null) {

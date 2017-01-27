@@ -2,6 +2,9 @@ package io.dico.dicore.util;
 
 import io.dico.dicore.command.Formatting;
 
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 public class StringUtil {
     
     /**
@@ -80,6 +83,22 @@ public class StringUtil {
         if (minutes != 0)
             result += minutes + " minutes|";
         return enumerate(result, "\\|");
+    }
+    
+    public static String getTimeLength(long sourceAmount, TimeUnit sourceUnit, String ifEmpty, TimeUnit... displayedUnits) {
+        if (displayedUnits.length == 0) {
+            throw new IllegalArgumentException("No displayed units");
+        }
+        Arrays.sort(displayedUnits, Collections.reverseOrder(TimeUnit::compareTo)); // sort by opposite of enum declaration order
+        List<String> segments = new ArrayList<>(displayedUnits.length);
+        for (TimeUnit unit : displayedUnits) {
+            long displayedAmount = unit.convert(sourceAmount, sourceUnit);
+            sourceAmount -= sourceUnit.convert(displayedAmount, unit);
+            if (displayedAmount > 0) {
+                segments.add(displayedAmount + " " + unit.name().toLowerCase());
+            }
+        }
+        return segments.isEmpty() ? ifEmpty : enumerate(segments.toArray(new String[segments.size()]));
     }
     
     public static long getTimeLength(String input) { //if -1: error
