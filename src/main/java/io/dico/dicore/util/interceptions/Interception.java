@@ -2,6 +2,7 @@ package io.dico.dicore.util.interceptions;
 
 import io.dico.dicore.command.CommandException;
 import io.dico.dicore.command.Formatting;
+import io.dico.dicore.command.InputHandler;
 import io.dico.dicore.util.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -61,6 +62,7 @@ public class Interception extends Command {
         this.intercepted = intercepted;
         this.handler = handler;
         this.prefixLabel = Formatting.translateChars('&', prefixLabel);
+        InputHandler.setTimingsIfNecessary(this);
     }
     
     public Interception(String prefixLabel, InterceptionHandler handler) {

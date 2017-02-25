@@ -1,14 +1,14 @@
-package io.dico.dicore.nms.impl.V1_8_R3;
+package io.dico.dicore.nms.impl.v1_8_R3;
 
 import io.dico.dicore.nms.NProperties;
 import net.minecraft.server.v1_8_R3.PropertyManager;
 
 import java.io.File;
 
-class Properties_V1_8_R3 implements NProperties {
+class Properties_v1_8_R3 implements NProperties {
     private PropertyManager propertyManager;
 
-    public Properties_V1_8_R3(PropertyManager propertyManager) {
+    public Properties_v1_8_R3(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
 

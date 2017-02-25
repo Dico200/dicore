@@ -1,9 +1,12 @@
-package io.dico.dicore.nms.impl.V1_8_R3;
+package io.dico.dicore.nms.impl.v1_8_R3;
 
 import com.google.common.collect.Maps;
 import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.util.Reflection;
+import net.minecraft.server.v1_8_R3.Block;
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.WorldServer;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Entity;
@@ -11,16 +14,15 @@ import org.bukkit.entity.Entity;
 import java.util.Map;
 import java.util.UUID;
 
-class World_V1_8_R3 implements NWorld {
-
+class World_v1_8_R3 implements NWorld {
     private final WorldServer server;
     private Map<UUID, Entity> entitiesByUUID;
 
-    public World_V1_8_R3(WorldServer server) {
+    public World_v1_8_R3(WorldServer server) {
         this.server = server;
     }
 
-    public World_V1_8_R3(World world) {
+    public World_v1_8_R3(World world) {
         this(((CraftWorld) world).getHandle());
     }
 
@@ -38,5 +40,16 @@ class World_V1_8_R3 implements NWorld {
         }
         return entitiesByUUID;
     }
-
+    
+    @Override
+    public void playBlockAction(Material blockType, int x, int y, int z, int tag) {
+        Block block = Block.REGISTRY.a(blockType.getId());
+        block.a(server, new BlockPosition(x, y, z), block.getBlockData(), 1, tag);
+    }
+    
+    @Override
+    public void applyPhysics(int x, int y, int z, Material block) {
+        server.applyPhysics(new BlockPosition(x, y, z), Block.REGISTRY.a(block.getId()));
+    }
+    
 }

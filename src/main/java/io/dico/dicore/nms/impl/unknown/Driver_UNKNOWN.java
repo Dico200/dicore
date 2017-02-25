@@ -22,11 +22,21 @@ public class Driver_UNKNOWN implements NDriver {
     }
 
     @Override
-    public ItemStack exploreNBT(ItemStack stack, Predicate<NBTMap> changed) {
+    public ItemStack exploreNBT(ItemStack item, Predicate<NBTMap> changed) {
         changed.test(new NBTMap_UNKNOWN());
-        return stack;
+        return item;
     }
-
+    
+    @Override
+    public NBTMap getNBT(ItemStack item) {
+        return new NBTMap_UNKNOWN();
+    }
+    
+    @Override
+    public ItemStack setNBT(ItemStack item, NBTMap map) {
+        return item;
+    }
+    
     @Override
     public NCreatureEquipment getCreatureEquipment(Creature creature) {
         return new CreatureEquipment_UNKNOWN(creature);
@@ -36,5 +46,7 @@ public class Driver_UNKNOWN implements NDriver {
     public NWorld getWorld(World world) {
         return world == null ? null : this.world;
     }
+    
+    
 
 }

@@ -1,4 +1,4 @@
-package io.dico.dicore.nms.impl.V1_8_R3;
+package io.dico.dicore.nms.impl.v1_8_R3;
 
 import io.dico.dicore.nms.NCreatureEquipment;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-class CreatureEquipment_V1_8_R3 implements NCreatureEquipment {
+class CreatureEquipment_v1_8_R3 implements NCreatureEquipment {
 
     private static final ItemStack NOT_SET = new ItemStack(Material.AIR);
 
@@ -27,12 +27,12 @@ class CreatureEquipment_V1_8_R3 implements NCreatureEquipment {
     private final EntityInsentient entity;
     private final ItemStack[] cache = new ItemStack[5];
 
-    public CreatureEquipment_V1_8_R3(EntityInsentient entity) {
+    public CreatureEquipment_v1_8_R3(EntityInsentient entity) {
         this.entity = entity;
         refreshCache();
     }
 
-    public CreatureEquipment_V1_8_R3(Creature creature) {
+    public CreatureEquipment_v1_8_R3(Creature creature) {
         this(((CraftCreature) creature).getHandle());
     }
 

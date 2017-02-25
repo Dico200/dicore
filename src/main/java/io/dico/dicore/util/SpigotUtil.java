@@ -9,11 +9,15 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.Attachable;
 import org.bukkit.material.MaterialData;
+import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.List;
 import java.util.Map;
@@ -136,6 +140,54 @@ public class SpigotUtil {
             builder.append(String.valueOf(object));
         }
         return builder.append(",\n").toString();
+    }
+    
+    public static BlockFace estimateDirectionTo(Location from, Location to) {
+        double dx = from.getX() - to.getX();
+        double dz = from.getZ() - to.getZ();
+    
+        boolean xGreater = Math.abs(dx) - Math.abs(dz) > 0;
+        double f = xGreater ? 2 / Math.abs(dx) : 2 / Math.abs(dz);
+        dx *= f;
+        dz *= f;
+    
+        double other = Math.abs(xGreater ? dz : dx);
+    
+        if (other <= .5) {
+            return xGreater ? (dx < 0 ? BlockFace.WEST : BlockFace.EAST) : (dz < 0 ? BlockFace.NORTH : BlockFace.SOUTH);
+        }
+    
+        if (other < 1.5) {
+            if (xGreater) {
+                return dx < 0 ? (dz < 0 ? BlockFace.WEST_NORTH_WEST : BlockFace.WEST_SOUTH_WEST) : (dz < 0 ? BlockFace.EAST_NORTH_EAST : BlockFace.EAST_SOUTH_EAST);
+            }
+            return dx < 0 ? (dz < 0 ? BlockFace.NORTH_NORTH_WEST : BlockFace.SOUTH_SOUTH_WEST) : (dz < 0 ? BlockFace.NORTH_NORTH_EAST : BlockFace.SOUTH_SOUTH_EAST);
+        }
+    
+        return dx < 0 ? (dz < 0 ? BlockFace.NORTH_WEST : BlockFace.SOUTH_WEST) : (dz < 0 ? BlockFace.NORTH_EAST : BlockFace.SOUTH_EAST);
+    }
+    
+    public static Entity findEntityFromDamager(Entity damager, EntityType searched) {
+        if (damager.getType() == searched) {
+            return damager;
+        }
+        
+        if (damager instanceof Projectile) {
+            ProjectileSource shooter = ((Projectile) damager).getShooter();
+            if (shooter instanceof Entity && ((Entity) shooter).getType() == searched) {
+                return (Entity) shooter;
+            }
+            return null;
+        }
+        
+        if (damager.getType() == EntityType.PRIMED_TNT) {
+            Entity source = ((TNTPrimed) damager).getSource();
+            if (source.getType() == searched) {
+                return source;
+            }
+        }
+    
+        return null;
     }
     
 }

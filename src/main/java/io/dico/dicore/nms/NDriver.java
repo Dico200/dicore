@@ -1,7 +1,7 @@
 package io.dico.dicore.nms;
 
-import io.dico.dicore.nms.impl.V1_8_R3.Driver_V1_8_R3;
 import io.dico.dicore.nms.impl.unknown.Driver_UNKNOWN;
+import io.dico.dicore.nms.impl.v1_8_R3.Driver_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -26,14 +26,20 @@ public interface NDriver {
 
     NServer getServer();
 
-    ItemStack exploreNBT(ItemStack stack, Predicate<NBTMap> changed);
+    ItemStack exploreNBT(ItemStack item, Predicate<NBTMap> changed);
+    
+    NBTMap getNBT(ItemStack item);
+    
+    ItemStack setNBT(ItemStack item, NBTMap map);
+    
+    //void setTitleOfOpenInventory(Player player, String title);
 
     NCreatureEquipment getCreatureEquipment(Creature creature);
 
     NWorld getWorld(World world);
 
     enum Version {
-        V1_8_R3,
+        v1_8_R3,
         UNKNOWN;
 
         private static final Version instance;
@@ -60,8 +66,8 @@ public interface NDriver {
             instance = inst;
 
             switch (instance) {
-                case V1_8_R3:
-                    driver = new Driver_V1_8_R3();
+                case v1_8_R3:
+                    driver = new Driver_v1_8_R3();
                     break;
                 default:
                     driver = new Driver_UNKNOWN();

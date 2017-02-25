@@ -33,7 +33,7 @@ public class InputHandler extends org.bukkit.command.Command {
         }
         this.prefix = prefix;
         
-        setTimingsIfNecessary();
+        setTimingsIfNecessary(this);
     }
     
     public void setOther(org.bukkit.command.Command other) {
@@ -84,17 +84,18 @@ public class InputHandler extends org.bukkit.command.Command {
         return handler.acceptTabComplete(sender, args);
     }
     
-    private void setTimingsIfNecessary() {
+    public static void setTimingsIfNecessary(org.bukkit.command.Command object) {
         // with paper spigot, the timings are not set by super constructor but by CommandMap.register(), which is not invoked for this system
         // I use reflection so that the project does not require paper spigot to build
         try {
-            Field field = getClass().getField("timings");
-            if (field.get(this) != null) return;
+            Field field = org.bukkit.command.Command.class.getDeclaredField("timings");
+            if (field.get(object) != null) return;
             Class<?> clazz = Class.forName("co.aikar.timings.TimingsManager");
             Method method = clazz.getDeclaredMethod("getCommandTiming", String.class, org.bukkit.command.Command.class);
-            Object timings = method.invoke(null, "", this);
-            field.set(this, timings);
+            Object timings = method.invoke(null, "", object);
+            field.set(object, timings);
         } catch (Throwable ignored) {
         }
     }
+    
 }

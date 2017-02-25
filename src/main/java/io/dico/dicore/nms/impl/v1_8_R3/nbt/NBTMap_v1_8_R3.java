@@ -1,4 +1,4 @@
-package io.dico.dicore.nms.impl.V1_8_R3.nbt;
+package io.dico.dicore.nms.impl.v1_8_R3.nbt;
 
 import com.google.common.collect.Maps;
 import io.dico.dicore.nms.nbt.NBTList;
@@ -13,17 +13,17 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class NBTMap_V1_8_R3 implements NBTMap {
+public class NBTMap_v1_8_R3 implements NBTMap {
     public final NBTTagCompound base;
     private final Map<String, Object> map;
     
-    public NBTMap_V1_8_R3(NBTTagCompound base) {
+    public NBTMap_v1_8_R3(NBTTagCompound base) {
         this.base = base;
         Map<String, NBTBase> map = Reflection.getValueInField(NBTTagCompound.class, "map", base);
-        this.map = Maps.transformValues(map, Converter_V1_8_R3::fromNMS);
+        this.map = Maps.transformValues(map, Converter_v1_8_R3::fromNMS);
     }
     
-    public NBTMap_V1_8_R3() {
+    public NBTMap_v1_8_R3() {
         this(new NBTTagCompound());
     }
     
@@ -55,7 +55,7 @@ public class NBTMap_V1_8_R3 implements NBTMap {
     @Override
     public Object put(String key, Object value) {
         Object previous = get(key);
-        base.set(key, Converter_V1_8_R3.toNMS(value));
+        base.set(key, Converter_v1_8_R3.toNMS(value));
         return previous;
     }
     
@@ -95,12 +95,19 @@ public class NBTMap_V1_8_R3 implements NBTMap {
     
     @Override
     public NBTMap getMap(Object key, NBTMap absent) {
-        try {
-            NBTMap result = (NBTMap) get(key);
-            return result == null ? absent : result;
-        } catch (ClassCastException e) {
+        Object result = get(key);
+        if (result == null) {
             return absent;
         }
+        try {
+            return (NBTMap) result;
+        } catch (ClassCastException ignored) {
+        }
+        try {
+            return new NBTMap_v1_8_R3((NBTTagCompound) result);
+        } catch (ClassCastException ignored) {
+        }
+        return absent;
     }
     
     @Override
