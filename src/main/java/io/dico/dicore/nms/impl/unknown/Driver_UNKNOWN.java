@@ -8,6 +8,7 @@ import io.dico.dicore.nms.impl.unknown.nbt.NBTMap_UNKNOWN;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.World;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Predicate;
@@ -47,6 +48,8 @@ public class Driver_UNKNOWN implements NDriver {
         return world == null ? null : this.world;
     }
     
-    
-
+    @Override
+    public boolean isInWater(Entity entity) {
+        return false;
+    }
 }

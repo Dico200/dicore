@@ -9,6 +9,7 @@ import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -66,5 +67,10 @@ public class Driver_v1_8_R3 implements NDriver {
     public NWorld getWorld(World world) {
         return worlds.computeIfAbsent(world, World_v1_8_R3::new);
     }
-
+    
+    @Override
+    public boolean isInWater(Entity entity) {
+        return ((net.minecraft.server.v1_8_R3.Entity) entity).inWater;
+    }
+    
 }

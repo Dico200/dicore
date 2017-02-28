@@ -6,6 +6,7 @@ import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Creature;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Predicate;
@@ -37,6 +38,8 @@ public interface NDriver {
     NCreatureEquipment getCreatureEquipment(Creature creature);
 
     NWorld getWorld(World world);
+    
+    boolean isInWater(Entity entity);
 
     enum Version {
         v1_8_R3,

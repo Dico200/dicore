@@ -282,4 +282,25 @@ public class NBTMap_v1_8_R3 implements NBTMap {
         }
     }
     
+    @Override
+    public String getString(Object key, String absent) {
+        try {
+            String result = (String) get(key);
+            return result == null ? absent : result;
+        } catch (ClassCastException ex) {
+            return absent;
+        }
+    }
+    
+    @Override
+    public String getString(Object key, Supplier<String> absent) {
+        Objects.requireNonNull(absent);
+        try {
+            String result = (String) get(key);
+            return result == null ? absent.get() : result;
+        } catch (ClassCastException ex) {
+            return absent.get();
+        }
+    }
+    
 }

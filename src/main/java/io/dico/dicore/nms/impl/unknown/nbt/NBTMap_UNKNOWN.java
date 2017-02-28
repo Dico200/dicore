@@ -50,7 +50,17 @@ public class NBTMap_UNKNOWN implements NBTMap {
     public NBTList getPresentList(Object key, Supplier<NBTList> absent) {
         return absent.get();
     }
-
+    
+    @Override
+    public String getString(Object key, String absent) {
+        return absent;
+    }
+    
+    @Override
+    public String getString(Object key, Supplier<String> absent) {
+        return absent.get();
+    }
+    
     @Override
     public int[] getIntArray(Object key, int[] absent) {
         return absent;

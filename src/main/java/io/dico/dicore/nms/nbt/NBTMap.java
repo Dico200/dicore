@@ -40,6 +40,14 @@ public interface NBTMap extends Map<String, Object> {
     
     NBTList getPresentList(Object key, Supplier<NBTList> absent);
     
+    String getString(Object key, String absent);
+    
+    String getString(Object key, Supplier<String> absent);
+    
+    default String getString(Object key) {
+        return getString(key, (String) null);
+    }
+    
     default int[] getIntArray(Object key) {
         return getIntArray(key, new int[0]);
     }
@@ -227,6 +235,16 @@ public interface NBTMap extends Map<String, Object> {
         @Override
         public NBTList getPresentList(Object key, Supplier<NBTList> absent) {
             throw new UnsupportedOperationException();
+        }
+    
+        @Override
+        public String getString(Object key, String absent) {
+            return absent;
+        }
+    
+        @Override
+        public String getString(Object key, Supplier<String> absent) {
+            return absent.get();
         }
     };
 }
