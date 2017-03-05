@@ -7,10 +7,7 @@ import io.dico.dicore.util.Reflection;
 import net.minecraft.server.v1_8_R3.NBTBase;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class NBTMap_v1_8_R3 implements NBTMap {
@@ -18,8 +15,12 @@ public class NBTMap_v1_8_R3 implements NBTMap {
     private final Map<String, Object> map;
     
     public NBTMap_v1_8_R3(NBTTagCompound base) {
-        this.base = base;
+        this.base = Objects.requireNonNull(base);
         Map<String, NBTBase> map = Reflection.getValueInField(NBTTagCompound.class, "map", base);
+        if (map == null) {
+            map = new HashMap<>();
+            Reflection.setValueInField(NBTTagCompound.class, "map", base, map);
+        }
         this.map = Maps.transformValues(map, Converter_v1_8_R3::fromNMS);
     }
     

@@ -6,10 +6,17 @@ import io.dico.dicore.nms.NServer;
 import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.nms.impl.v1_8_R3.nbt.NBTMap_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.ItemFood;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
@@ -28,7 +35,12 @@ public class Driver_v1_8_R3 implements NDriver {
     @Override
     public ItemStack exploreNBT(ItemStack item, Predicate<NBTMap> consumer) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-        NBTMap map = new NBTMap_v1_8_R3(nms.getTag());
+        NBTTagCompound tag = nms.getTag();
+        if (tag == null) {
+            tag = new NBTTagCompound();
+            nms.setTag(tag);
+        }
+        NBTMap map = new NBTMap_v1_8_R3(tag);
         if (consumer.test(map)) {
             return CraftItemStack.asCraftMirror(nms);
         }
@@ -70,7 +82,30 @@ public class Driver_v1_8_R3 implements NDriver {
     
     @Override
     public boolean isInWater(Entity entity) {
-        return ((net.minecraft.server.v1_8_R3.Entity) entity).inWater;
+        return ((CraftEntity) entity).getHandle().inWater;
+    }
+    
+    @Override
+    public int getFoodRestored(Material item) {
+        Item nmsItem = Item.getById(item.getId());
+        if (nmsItem instanceof ItemFood) {
+            return ((ItemFood) nmsItem).getNutrition(null);
+        }
+        return 0;
+    }
+    
+    @Override
+    public float getSaturationModifier(Material item) {
+        Item nmsItem = Item.getById(item.getId());
+        if (nmsItem instanceof ItemFood) {
+            return ((ItemFood) nmsItem).getSaturationModifier(null);
+        }
+        return 0;
+    }
+    
+    @Override
+    public long getLastActionTime(Player player) {
+        return ((CraftPlayer) player).getHandle().D();
     }
     
 }

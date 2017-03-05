@@ -21,17 +21,25 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class Registrator implements Listener {
+public class Registrator {
     private Plugin plugin;
     private ListMultimap<HandlerList, RegisteredListener> listeners = LinkedListMultimap.create();
-    private List<Listener> myListeners = new ArrayList<>(Collections.singletonList(this));
+    //private List<Listener> myListeners = new ArrayList<>(Collections.singletonList(this));
     private boolean enabled = false;
     private RegisteredListener pluginEnableListener, pluginDisableListener;
+    private Listener listener;
     
     public Registrator(Plugin plugin) {
-        Listener pluginStateChangeListener = newEmptyListener();
-        pluginEnableListener = createRegistration(pluginStateChangeListener, EventPriority.NORMAL, false, PluginEnableEvent.class, this::onPluginEnable);
-        pluginDisableListener = createRegistration(pluginStateChangeListener, EventPriority.NORMAL, false, PluginDisableEvent.class, this::onPluginDisable);
+        listener = new Listener() {
+            @Override
+            public boolean equals(Object obj) {
+                // HandlerList won't detect any duplicate event-priority pairs for the listener like this, so we don't need to create multiple and keep track.
+                return false;
+            }
+        };
+        
+        pluginEnableListener = createRegistration(listener, EventPriority.NORMAL, false, PluginEnableEvent.class, this::onPluginEnable);
+        pluginDisableListener = createRegistration(listener, EventPriority.NORMAL, false, PluginDisableEvent.class, this::onPluginDisable);
         setPlugin(plugin);
     }
     
@@ -102,11 +110,14 @@ public class Registrator implements Listener {
     }
     
     private Listener getListenerFor(HandlerList list, EventPriority priority) {
+        /*
         int needed = (int) (listeners.get(list).stream().filter(listener -> listener.getPriority() == priority).count() + 1);
         while (needed > myListeners.size()) {
             myListeners.add(newEmptyListener());
         }
         return myListeners.get(needed - 1);
+        */
+        return listener;
     }
     
     public ListMultimap<HandlerList, RegisteredListener> getListeners() {
