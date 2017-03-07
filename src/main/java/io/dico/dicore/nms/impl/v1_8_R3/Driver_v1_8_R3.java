@@ -6,11 +6,11 @@ import io.dico.dicore.nms.NServer;
 import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.nms.impl.v1_8_R3.nbt.NBTMap_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.ItemFood;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftCreature;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -106,6 +106,16 @@ public class Driver_v1_8_R3 implements NDriver {
     @Override
     public long getLastActionTime(Player player) {
         return ((CraftPlayer) player).getHandle().D();
+    }
+    
+    @Override
+    public Location generateRandomPosition(Creature creature, int horizontalDistance, int verticalDistance) {
+        Vec3D res = RandomPositionGenerator.a(((CraftCreature) creature).getHandle(), horizontalDistance, verticalDistance);
+        Location loc = creature.getLocation();
+        loc.setX(res.a);
+        loc.setY(res.b);
+        loc.setZ(res.c);
+        return loc;
     }
     
 }

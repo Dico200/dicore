@@ -6,6 +6,7 @@ import io.dico.dicore.nms.NServer;
 import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.nms.impl.unknown.nbt.NBTMap_UNKNOWN;
 import io.dico.dicore.nms.nbt.NBTMap;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Creature;
@@ -68,6 +69,11 @@ public class Driver_UNKNOWN implements NDriver {
     @Override
     public long getLastActionTime(Player player) {
         return System.currentTimeMillis();
+    }
+    
+    @Override
+    public Location generateRandomPosition(Creature creature, int horizontalDistance, int verticalDistance) {
+        return creature.getLocation();
     }
     
 }

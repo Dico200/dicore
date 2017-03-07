@@ -1,5 +1,7 @@
 package io.dico.dicore.nms.nbt;
 
+import org.bukkit.enchantments.Enchantment;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;

@@ -4,6 +4,7 @@ import io.dico.dicore.nms.impl.unknown.Driver_UNKNOWN;
 import io.dico.dicore.nms.impl.v1_8_R3.Driver_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Creature;
@@ -48,6 +49,8 @@ public interface NDriver {
     float getSaturationModifier(Material item);
     
     long getLastActionTime(Player player);
+    
+    Location generateRandomPosition(Creature creature, int horizontalDistance, int verticalDistance);
 
     enum Version {
         v1_8_R3,
