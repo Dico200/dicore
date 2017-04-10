@@ -1,59 +1,60 @@
-package io.dico.dicore.nms.impl.V1_8_R3.nbt;
+package io.dico.dicore.nms.impl.v1_8_R3.nbt;
 
 import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import io.dico.dicore.nms.nbt.NBTType;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.NBTTagList;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Objects;
 import java.util.function.Supplier;
 
-public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
-
+public class NBTList_v1_8_R3 extends AbstractList<Object> implements NBTList {
+    
     public final NBTTagList list;
-
-    public NBTList_V1_8_R3(NBTTagList list) {
+    
+    public NBTList_v1_8_R3(NBTTagList list) {
         this.list = list;
     }
-
-    public NBTList_V1_8_R3() {
+    
+    public NBTList_v1_8_R3() {
         this(new NBTTagList());
     }
-
+    
     @Override
     public Object get(int index) {
-        return Converter_V1_8_R3.fromNMS(list.g(index));
+        return Converter_v1_8_R3.fromNMS(list.g(index));
     }
-
+    
     @Override
     public int size() {
         return list.size();
     }
-
+    
     @Override
     public boolean add(Object o) {
         int size = list.size();
-        list.add(Converter_V1_8_R3.toNMS(o));
+        list.add(Converter_v1_8_R3.toNMS(o));
         return list.size() != size;
     }
-
+    
     @Override
     public Object set(int index, Object element) {
         Object previous = get(index);
-        list.a(index, Converter_V1_8_R3.toNMS(element));
+        list.a(index, Converter_v1_8_R3.toNMS(element));
         return previous;
     }
-
+    
     @Override
     public Object remove(int index) {
-        return Converter_V1_8_R3.fromNMS(list.a(index));
+        return Converter_v1_8_R3.fromNMS(list.a(index));
     }
-
+    
     @Override
     public NBTType getElementType() {
-        return Converter_V1_8_R3.getElementType(list.f());
+        return Converter_v1_8_R3.getElementType(list.f());
     }
-
+    
     @Override
     public NBTMap getMap(int index, NBTMap absent) {
         Objects.requireNonNull(absent);
@@ -64,7 +65,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public NBTList getList(int index, NBTList absent) {
         Objects.requireNonNull(absent);
@@ -75,7 +76,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public int[] getIntArray(int index, int[] absent) {
         Objects.requireNonNull(absent);
@@ -86,7 +87,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public byte[] getByteArray(int index, byte[] absent) {
         Objects.requireNonNull(absent);
@@ -97,7 +98,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public double getDouble(int index, double absent) {
         try {
@@ -107,7 +108,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public float getFloat(int index, float absent) {
         try {
@@ -117,7 +118,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public String getString(int index, String absent) {
         Objects.requireNonNull(absent);
@@ -128,7 +129,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public long getLong(int index, long absent) {
         try {
@@ -138,7 +139,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public int getInt(int index, int absent) {
         try {
@@ -148,7 +149,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent;
         }
     }
-
+    
     @Override
     public short getShort(int index, int absent) {
         try {
@@ -158,7 +159,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return (short) absent;
         }
     }
-
+    
     @Override
     public byte getByte(int index, int absent) {
         try {
@@ -168,7 +169,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return (byte) absent;
         }
     }
-
+    
     @Override
     public NBTMap getMap(int index, Supplier<NBTMap> absent) {
         Objects.requireNonNull(absent);
@@ -179,7 +180,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
             return absent.get();
         }
     }
-
+    
     @Override
     public NBTMap getPresentMap(int index, NBTMap absent) {
         Objects.requireNonNull(absent);
@@ -194,7 +195,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
         }
         return result;
     }
-
+    
     @Override
     public NBTMap getPresentMap(int index, Supplier<NBTMap> absent) {
         Objects.requireNonNull(absent);
@@ -209,7 +210,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
         }
         return result;
     }
-
+    
     @Override
     public NBTList getPresentList(int index, NBTList absent) {
         Objects.requireNonNull(absent);
@@ -224,7 +225,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
         }
         return result;
     }
-
+    
     @Override
     public NBTList getPresentList(int index, Supplier<NBTList> absent) {
         Objects.requireNonNull(absent);
@@ -239,7 +240,7 @@ public class NBTList_V1_8_R3 extends AbstractList<Object> implements NBTList {
         }
         return result;
     }
-
+    
     @Override
     public NBTList getList(int index, Supplier<NBTList> absent) {
         Objects.requireNonNull(absent);

@@ -8,22 +8,22 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class PreparingGenerator<T> implements Generator<T> {
     private static final ThreadLocal<PreparingGenerator> threadLocal = new ThreadLocal<>();
     private static final ThreadGroup threadGroup = new ThreadGroup("Generators");
-
+    
     private final Lock lock = new ReentrantLock();
     private final Synchronizer nextSync = new Synchronizer(lock.newCondition());
     private final Synchronizer returnSync = new Synchronizer(lock.newCondition());
     private final Thread thread = new Thread(threadGroup, this::thread);
-
+    
     private volatile T next;
     private volatile RuntimeException thrown;
     private volatile boolean hasNext = true;
     private volatile boolean hasYield;
-
+    
     public PreparingGenerator() {
         thread.setDaemon(true);
         thread.start();
     }
-
+    
     private void thread() {
         try {
             lock.lock();
@@ -39,7 +39,7 @@ public abstract class PreparingGenerator<T> implements Generator<T> {
             System.out.println("Thread end");
         }
     }
-
+    
     @Override
     public synchronized boolean hasNext() {
         if (!hasYield) {
@@ -57,7 +57,7 @@ public abstract class PreparingGenerator<T> implements Generator<T> {
         }
         return hasNext;
     }
-
+    
     @Override
     public synchronized T next() {
         if (!hasNext()) {
@@ -69,25 +69,25 @@ public abstract class PreparingGenerator<T> implements Generator<T> {
         lock.unlock();
         return next;
     }
-
+    
     protected void yield(T value) {
         nextSync.synchronize();
         next = value;
         returnSync.synchronize();
     }
-
+    
     @Override
     public boolean isPreparingGenerator() {
         return true;
     }
-
+    
     protected abstract void run();
-
+    
     @SuppressWarnings("unchecked")
     public static <T> void doYield(T value) {
         threadLocal.get().yield(value);
     }
-
+    
     public static <T> Generator<T> generator(Runnable method) {
         return new PreparingGenerator<T>() {
             @Override
@@ -96,16 +96,16 @@ public abstract class PreparingGenerator<T> implements Generator<T> {
             }
         };
     }
-
+    
     private static class Synchronizer {
-
+        
         final Condition condition;
         volatile boolean waiting;
-
+        
         Synchronizer(Condition condition) {
             this.condition = condition;
         }
-
+        
         void synchronize() {
             if (waiting) {
                 condition.signal();
@@ -115,8 +115,8 @@ public abstract class PreparingGenerator<T> implements Generator<T> {
                 waiting = false;
             }
         }
-
+        
     }
-
+    
 }
 

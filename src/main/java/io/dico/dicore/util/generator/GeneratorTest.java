@@ -8,11 +8,11 @@ import java.util.Set;
 import static io.dico.dicore.util.generator.PreparingGenerator.doYield;
 
 public class GeneratorTest extends TestCase {
-
+    
     public void testGenerator() {
-
+        
         Set<String> set = new HashSet<>();
-        for (String string : PreparingGenerator.<String>generator(() -> {
+        for (String string : AwesomeGenerator.<String>generator(() -> {
             System.out.println("hi");
             doYield("x");
             System.out.println("hi");
@@ -23,10 +23,10 @@ public class GeneratorTest extends TestCase {
         })) {
             set.add(string);
         }
-
+        
         assertTrue(set.contains("x"));
         assertTrue(set.contains("y"));
         assertTrue(set.contains("z"));
     }
-
+    
 }

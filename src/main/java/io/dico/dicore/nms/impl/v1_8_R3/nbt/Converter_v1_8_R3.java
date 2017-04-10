@@ -1,16 +1,16 @@
-package io.dico.dicore.nms.impl.V1_8_R3.nbt;
+package io.dico.dicore.nms.impl.v1_8_R3.nbt;
 
 import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import io.dico.dicore.nms.nbt.NBTType;
 import net.minecraft.server.v1_8_R3.*;
 
-public final class Converter_V1_8_R3 {
-
-    private Converter_V1_8_R3() {
+public final class Converter_v1_8_R3 {
+    
+    private Converter_v1_8_R3() {
         throw new UnsupportedOperationException();
     }
-
+    
     public static Object fromNMS(NBTBase base) {
         if (base == null) {
             return null;
@@ -35,18 +35,18 @@ public final class Converter_V1_8_R3 {
             case 8:
                 return ((NBTTagString) base).a_();
             case 9:
-                return new NBTList_V1_8_R3((NBTTagList) base);
+                return new NBTList_v1_8_R3((NBTTagList) base);
             case 10:
-                return new NBTMap_V1_8_R3((NBTTagCompound) base);
+                return new NBTMap_v1_8_R3((NBTTagCompound) base);
             case 11:
                 return ((NBTTagIntArray) base).c();
             default:
                 return null;
         }
     }
-
+    
     public static NBTType getElementType(int typeId) {
-        switch(typeId) {
+        switch (typeId) {
             case 1:
                 return NBTType.BYTE;
             case 2:
@@ -73,7 +73,7 @@ public final class Converter_V1_8_R3 {
                 return null;
         }
     }
-
+    
     public static NBTBase toNMS(Object object) {
         if (object == null) {
             return null;
@@ -101,21 +101,21 @@ public final class Converter_V1_8_R3 {
                 if (object == NBTList.EMPTY) {
                     return new NBTTagList();
                 }
-                if (object instanceof NBTList_V1_8_R3) {
-                    return ((NBTList_V1_8_R3) object).list;
+                if (object instanceof NBTList_v1_8_R3) {
+                    return ((NBTList_v1_8_R3) object).list;
                 }
                 throw new IllegalArgumentException();
             case MAP:
                 if (object == NBTMap.EMPTY) {
                     return new NBTTagCompound();
                 }
-                if (object instanceof NBTMap_V1_8_R3) {
-                    return ((NBTMap_V1_8_R3) object).base;
+                if (object instanceof NBTMap_v1_8_R3) {
+                    return ((NBTMap_v1_8_R3) object).base;
                 }
                 throw new IllegalArgumentException();
             default:
                 return null;
         }
     }
-
+    
 }

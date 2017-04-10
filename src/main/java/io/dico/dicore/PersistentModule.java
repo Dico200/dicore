@@ -7,24 +7,24 @@ import io.dico.dicore.saving.fileadapter.GsonFileAdapter;
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
-public abstract class OfflineModule<P extends ModuleManager, T> extends OfflineModuleBase<P, T> {
+public abstract class PersistentModule<Manager extends ModuleManager, Data> extends PersistentModuleBase<Manager, Data> {
     private final Type typeOfT = getDataType();
-
-    public OfflineModule(String name, P plugin, boolean usesConfig, boolean debugging) {
-        super(name, plugin, usesConfig, debugging);
+    
+    protected PersistentModule(String name, Manager manager, boolean usesConfig, boolean debugging) {
+        super(name, manager, usesConfig, debugging);
     }
-
+    
     protected Type getTypeOfT() {
         return typeOfT;
     }
-
+    
     protected abstract Gson createGson();
-
+    
     protected abstract Type getDataType();
-
+    
     @Override
-    FileAdapter<T> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
+    FileAdapter<Data> newAdapter(Consumer<Throwable> onErrorLoad, Consumer<Throwable> onErrorSave) {
         return GsonFileAdapter.create(typeOfT, createGson(), onErrorLoad, onErrorSave);
     }
-
+    
 }

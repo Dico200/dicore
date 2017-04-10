@@ -68,22 +68,22 @@ public class Formatting {
         }
         return new Formatting(UNDEFINED);
     }
-
+    
     public static Formatting from(String chars) {
         return chars.length() == 1 ? from(chars.charAt(0)) : getFormats(chars, UNDEFINED);
     }
-
+    
     public static Formatting getFormats(String input) {
         return getFormats(input, FORMAT_CHAR);
     }
-
+    
     public static Formatting getFormats(String input, char formatChar) {
         boolean needsFormatChar = formatChar != UNDEFINED;
-
+        
         char[] formats = new char[6];
         // just make sure it's not the same as formatChar
-        char previous = (formatChar == 'a')? 'b' : 'a';
-
+        char previous = (formatChar == 'a') ? 'b' : 'a';
+        
         for (char c : input.toLowerCase().toCharArray()) {
             if (previous == formatChar || !needsFormatChar) {
                 if (isColourChar(c) || isResetChar(c)) {
@@ -104,7 +104,7 @@ public class Formatting {
         }
         return new Formatting(formats);
     }
-
+    
     public static String translateChars(char alternateChar, String input) {
         char[] result = new char[input.length()];
         char previous = UNDEFINED;
@@ -113,30 +113,30 @@ public class Formatting {
             if (previous == alternateChar && isRecognizedChar(c)) {
                 result[i] = FORMAT_CHAR;
             }
-            result[i+=1] = c;
+            result[i += 1] = c;
             previous = c;
         }
         return String.valueOf(result);
     }
-
+    
     private static boolean isRecognizedChar(char c) {
         return isColourChar(c) || isFormatChar(c) || isResetChar(c);
     }
-
+    
     private static boolean isColourChar(char c) {
         return "0123456789abcdefABCDEF".indexOf(c) > -1;
     }
-
+    
     private static boolean isResetChar(char c) {
         return "rR".indexOf(c) > -1;
     }
-
+    
     private static boolean isFormatChar(char c) {
         return "lmnokLMNOK".indexOf(c) > -1;
     }
-
+    
     private final String format;
-
+    
     private Formatting(char[] formats) {
         StringBuilder format = new StringBuilder();
         for (char c : formats) {
@@ -146,11 +146,11 @@ public class Formatting {
         }
         this.format = format.toString();
     }
-
+    
     private Formatting(char c) {
-        this.format = (c != UNDEFINED)? String.valueOf(FORMAT_CHAR) + c : "";
+        this.format = (c != UNDEFINED) ? String.valueOf(FORMAT_CHAR) + c : "";
     }
-
+    
     @Override
     public String toString() {
         return format;

@@ -1,163 +1,195 @@
 package io.dico.dicore;
 
 import io.dico.dicore.util.Logging;
+import io.dico.dicore.util.Registrator;
+import io.dico.dicore.util.exceptions.ExceptionHandler;
 import io.dico.dicore.util.exceptions.Exceptions;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
 import java.io.*;
+import java.util.Objects;
 
-public class Module<P extends ModuleManager> implements Logging {
-    private final P plugin;
+public class Module<Manager extends ModuleManager> extends Logging.SubLogging {
+    private final Manager manager;
     private final String name;
     private final boolean usesConfig;
-    private final boolean debugging;
     private final String baseFilename;
     private FileConfiguration config;
     private boolean enabled;
-
-    protected Module(String name, P plugin, boolean usesConfig, boolean debugging) {
-        this.plugin = plugin;
+    private boolean enabledBefore;
+    
+    protected Module(String name, Manager manager, boolean usesConfig, boolean debugging) {
+        super(name, manager, debugging);
+        this.manager = Objects.requireNonNull(manager);
         this.name = name;
         this.usesConfig = usesConfig;
-        this.debugging = debugging;
-        baseFilename = name.toLowerCase().replace(" ", "_");
-        info("Loading module " + getName());
+        baseFilename = name.toLowerCase().replaceAll("_| |-", "");
     }
-
+    
+    protected void load() {
+        
+    }
+    
     protected void enable() {
-
+        
     }
-
+    
     protected void disable() {
-
+        
     }
-
+    
+    protected void update() {
+        
+    }
+    
     public String getName() {
         return name;
     }
-
+    
     public boolean isEnabled() {
         return enabled;
     }
-
-    protected P getPlugin() {
-        return plugin;
+    
+    public Manager getManager() {
+        return manager;
     }
-
+    
+    public Registrator getRegistrator() {
+        return manager.getRegistrator();
+    }
+    
     void setEnabled(boolean enabled) {
         if (this.enabled == enabled) {
             return;
         }
-
-        this.enabled = enabled;
+        
         if (enabled) {
-            info("Enabling module " + getName());
-            if (this instanceof Listener) {
-                Bukkit.getPluginManager().registerEvents((Listener) this, plugin.getPlugin());
+            config = null;
+            this.enabled = true;
+            
+            if (!enabledBefore) {
+                enabledBefore = true;
+                try {
+                    load();
+                } catch (Exception ex) {
+                    ExceptionHandler.log(this::error, "loading", ex);
+                }
             }
-            Exceptions.runSafe(this::enable);
+            
+            try {
+                enable();
+                info("enabled successfully");
+            } catch (Exception ex) {
+                ExceptionHandler.log(this::error, "enabling", ex);
+            }
+            
+            if (this instanceof Listener) {
+                Bukkit.getPluginManager().registerEvents((Listener) this, manager.getPlugin());
+            }
+            
         } else {
-            info("Disabling module " + getName());
-            Exceptions.runSafe(this::disable);
+            try {
+                disable();
+            } catch (Exception ex) {
+                ExceptionHandler.log(this::error, "disabling", ex);
+            }
+            
+            this.enabled = false;
+            
+            if (this instanceof Listener) {
+                HandlerList.unregisterAll((Listener) this);
+            }
         }
     }
-
+    
     private void checkUsesConfig() {
         if (!usesConfig) {
             throw new UnsupportedOperationException("This module does not use config files.");
         }
     }
-
-    protected FileConfiguration getConfig() {
+    
+    public FileConfiguration getConfig() {
         checkUsesConfig();
         if (config == null) {
             reloadConfig();
         }
         return config;
     }
-
-    protected File getDataFolder() {
-        File result = new File(plugin.getDataFolder(), baseFilename);
+    
+    public File getDataFolder() {
+        File result = new File(manager.getDataFolder(), baseFilename);
         if (!result.exists()) {
             Exceptions.runSafe(result::mkdirs);
         }
         return result;
     }
-
+    
     private File getConfigFile() {
         checkUsesConfig();
         return new File(getDataFolder(), "config.yml");
     }
-
+    
     private InputStream getDefaultConfigFile() {
-        InputStream stream = Module.class.getResourceAsStream("/" + baseFilename + "-config.yml");
-
-        if (stream == null) {
-            debug("Didn't find default config for module " + getName());
-            return null;
-        }
-
-        return stream;
+        String name = "/module-configs/" + baseFilename + ".yml";
+        return getClass().getResourceAsStream(name);
     }
-
-    protected void reloadConfig() {
+    
+    public void reloadConfig() {
         checkUsesConfig();
-
-        InputStream configStream;
-        try {
-            configStream = new FileInputStream(getConfigFile());
-        } catch (FileNotFoundException e) {
-            configStream = null;
+        
+        try (InputStream stream = new FileInputStream(getConfigFile())) {
+            config = loadYaml(stream, "config");
+        } catch (FileNotFoundException ex) {
+            try (InputStream in = getDefaultConfigFile();
+                 OutputStream out = new FileOutputStream(getConfigFile())) {
+                if (in != null) {
+                    IOUtils.copy(in, out);
+                    debug("Wrote default config");
+                } else {
+                    warn("Default config does not exist");
+                }
+            } catch (IOException ex2) {
+                ExceptionHandler.log(this::error, "writing default config", ex2);
+            }
+        } catch (IOException ex) {
+            ExceptionHandler.log(this::error, "loading config", ex);
         }
-
-        config = loadYaml(configStream, "config");
-
-        final InputStream defaultConfigStream = getDefaultConfigFile();
-        if (defaultConfigStream != null) {
-            config.setDefaults(loadYaml(defaultConfigStream, "default config"));
-            config.options().copyDefaults(true);
+        
+        if (config == null) {
+            config = new YamlConfiguration();
         }
-
-        saveConfig();
-    }
-
-    private String prefix(Object o) {
-        return String.format("[%s]%s", name, String.valueOf(o));
-    }
-
-    @Override
-    public void error(Object o) {
-        plugin.error(prefix(o));
-    }
-
-    @Override
-    public void info(Object o) {
-        plugin.info(prefix(o));
-    }
-
-    @Override
-    public void debug(Object o) {
-        if (debugging) {
-            plugin.info("[DEBUG]" + prefix(String.valueOf(o)));
+        
+        try (InputStream stream = getDefaultConfigFile()) {
+            if (stream != null) {
+                Configuration defaults = loadYaml(stream, "default config");
+                config.setDefaults(defaults);
+                config.options().copyDefaults(true);
+            }
+        } catch (IOException ex) {
+            ExceptionHandler.log(this::error, "loading default config", ex);
         }
+        
     }
-
+    
     private YamlConfiguration loadYaml(InputStream config, String configType) {
         YamlConfiguration result = new YamlConfiguration();
         if (config != null) try {
-            String contents = toString(config, "Failed to load " + configType + " for module " + getName() + ", cause unknown");
+            String contents = toString(config, "Failed to load " + configType + ", cause unknown");
             result.loadFromString(contents);
         } catch (InvalidConfigurationException e) {
-            error("Failed to load " + configType + " for module " + getName() + ", it is of invalid syntax.");
+            error("Failed to load " + configType + ", it is of invalid syntax.");
             e.printStackTrace();
         }
         return result;
     }
-
+    
     private String toString(InputStream stream, String exceptionMessage) {
         StringBuilder retBuilder = new StringBuilder();
         try (InputStreamReader streamReader = new InputStreamReader(stream);
@@ -172,16 +204,16 @@ public class Module<P extends ModuleManager> implements Logging {
         }
         return retBuilder.toString();
     }
-
-    protected void saveConfig() {
+    
+    public void saveConfig() {
         checkUsesConfig();
         try {
             config.save(getConfigFile());
-        } catch (IOException e) {
-            error("Failed to save config file for " + getName());
+        } catch (IOException ex) {
+            ExceptionHandler.log(this::error, "saving config", ex);
         }
     }
-
+    
     //
     //Abuse hashing to prevent modules with duplicate filenames.
     //
@@ -189,18 +221,14 @@ public class Module<P extends ModuleManager> implements Logging {
     public int hashCode() {
         return baseFilename.hashCode();
     }
-
+    
     @Override
     public boolean equals(Object other) {
         return other instanceof Module && nameInterferesWith((Module) other);
     }
-
+    
     private boolean nameInterferesWith(Module other) {
         return baseFilename.equals(other.baseFilename);
     }
-
-    protected void update() {
-
-    }
-
+    
 }
