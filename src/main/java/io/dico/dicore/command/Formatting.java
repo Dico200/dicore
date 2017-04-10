@@ -33,6 +33,10 @@ public class Formatting {
             CLEAR			= from('r'),
             EMPTY			= from(UNDEFINED);
 
+    public static String stripAll(String value) {
+        return stripAll(FORMAT_CHAR, value);
+    }
+
     public static String stripAll(char alternateChar, String value) {
         int index = value.indexOf(alternateChar);
         int max;
