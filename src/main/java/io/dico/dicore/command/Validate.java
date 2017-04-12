@@ -3,20 +3,18 @@ package io.dico.dicore.command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.Contract;
-
 import java.util.Optional;
 
 public class Validate {
     
-    @Contract("false, _ -> fail")
+    //@Contract("false, _ -> fail")
     public static void isTrue(boolean expression, String failMessage) {
         if (!expression) {
             throw new CommandException(failMessage);
         }
     }
     
-    @Contract("null, _ -> fail")
+    //@Contract("null, _ -> fail")
     public static void notNull(Object obj, String failMessage) {
         Validate.isTrue(obj != null, failMessage);
     }
@@ -29,12 +27,12 @@ public class Validate {
         Validate.isAuthorized(sender, permission, "You do not have permission to use that command");
     }
     
-    @Contract("null -> fail")
+    //@Contract("null -> fail")
     public static void isPlayer(CommandSender sender) {
         isTrue(sender instanceof Player, "That command can only be used by players");
     }
     
-    @Contract("null -> fail")
+    //@Contract("null -> fail")
     public static void isConsole(CommandSender sender) {
         isTrue(sender instanceof ConsoleCommandSender, "That command can only be used by the console");
     }
