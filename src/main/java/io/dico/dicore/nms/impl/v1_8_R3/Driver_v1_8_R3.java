@@ -9,7 +9,9 @@ import io.dico.dicore.nms.nbt.NBTMap;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_8_R3.CraftSound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftCreature;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -116,6 +118,17 @@ public class Driver_v1_8_R3 implements NDriver {
         loc.setY(res.b);
         loc.setZ(res.c);
         return loc;
+    }
+
+    @Override
+    public void sendSoundPacket(Player player, Sound sound, float volume, float pitch) {
+        EntityPlayer p = ((CraftPlayer) player).getHandle();
+        p.playerConnection.sendPacket(new PacketPlayOutNamedSoundEffect(CraftSound.getSound(sound), p.locX, p.locY, p.locZ, volume, pitch));
+    }
+
+    @Override
+    public void sendSoundPacket(Player player, Sound sound, Location loc, float volume, float pitch) {
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutNamedSoundEffect(CraftSound.getSound(sound), loc.getX(), loc.getY(), loc.getZ(), volume, pitch));
     }
     
 }

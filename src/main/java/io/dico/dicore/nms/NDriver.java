@@ -3,10 +3,7 @@ package io.dico.dicore.nms;
 import io.dico.dicore.nms.impl.unknown.Driver_UNKNOWN;
 import io.dico.dicore.nms.impl.v1_8_R3.Driver_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -51,6 +48,10 @@ public interface NDriver {
     long getLastActionTime(Player player);
     
     Location generateRandomPosition(Creature creature, int horizontalDistance, int verticalDistance);
+
+    void sendSoundPacket(Player player, Sound sound, float volume, float pitch);
+
+    void sendSoundPacket(Player player, Sound sound, Location location, float volume, float pitch);
 
     enum Version {
         v1_8_R3,
