@@ -11,8 +11,11 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.function.Predicate;
 
@@ -45,7 +48,17 @@ public class Driver_UNKNOWN implements NDriver {
     public NCreatureEquipment getCreatureEquipment(Creature creature) {
         return new CreatureEquipment_UNKNOWN(creature);
     }
-
+    
+    @Override
+    public PotionEffect getActiveEffect(LivingEntity entity, PotionEffectType type) {
+        for (PotionEffect effect : entity.getActivePotionEffects()) {
+            if (effect.getType() == type) {
+                return effect;
+            }
+        }
+        return null;
+    }
+    
     @Override
     public NWorld getWorld(World world) {
         return world == null ? null : this.world;

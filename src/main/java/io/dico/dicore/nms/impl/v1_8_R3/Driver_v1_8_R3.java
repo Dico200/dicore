@@ -12,12 +12,16 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftCreature;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +78,16 @@ public class Driver_v1_8_R3 implements NDriver {
     public NCreatureEquipment getCreatureEquipment(Creature creature) {
         return new CreatureEquipment_v1_8_R3(creature);
     }
-
+    
+    @Override
+    public PotionEffect getActiveEffect(LivingEntity entity, PotionEffectType type) {
+        MobEffect active = ((CraftLivingEntity) entity).getHandle().effects.get(type.getId());
+        if (active == null) {
+            return null;
+        }
+        return new PotionEffect(type, active.getDuration(), active.getAmplifier(), active.isAmbient(), active.isShowParticles());
+    }
+    
     @Override
     public NWorld getWorld(World world) {
         return worlds.computeIfAbsent(world, World_v1_8_R3::new);

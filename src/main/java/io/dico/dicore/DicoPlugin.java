@@ -5,7 +5,9 @@ import io.dico.dicore.util.Modules;
 import io.dico.dicore.util.Registrator;
 import io.dico.dicore.util.TickTask;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -161,6 +163,11 @@ public class DicoPlugin extends JavaPlugin implements ModuleManager {
     
     @Override
     public final void onEnable() {
+        getRegistrator().registerListener(PlayerLoginEvent.class, EventPriority.LOW, true, (e) -> {
+            
+        });
+        
+        
         if (!preEnable()) {
             getLogger().severe("An error occurred whilst enabling plugin " + getName() + " !");
             getServer().getPluginManager().disablePlugin(this);

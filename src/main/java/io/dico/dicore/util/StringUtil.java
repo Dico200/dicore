@@ -106,26 +106,24 @@ public class StringUtil {
     }
     
     public static long getTimeLength(String input) { //if -1: error
-        char[] chars = input.toCharArray();
         long count = 0;
         int i = 0;
         while (i < input.length()) {
             int num = 0;
             char unit = '\0';
             boolean negate;
-            if (negate = chars[i] == '-') {
+            if (negate = input.charAt(i) == '-') {
                 i++;
             }
             do {
-                char c = chars[i];
-                try {
-                    num = Integer.parseInt(Character.toString(c)) + 10 * num;
-                } catch (NumberFormatException e) {
+                char c = input.charAt(i);
+                int digit = c - '0';
+                if (0 <= digit && digit < 10) {
+                    num = 10 * num + digit;
+                } else {
                     unit = c;
-                    i++;
                     break;
                 }
-                i++;
             } while (i < input.length());
             
             long unitTime = getUnitTime(unit);
@@ -141,12 +139,16 @@ public class StringUtil {
     
     public static long getUnitTime(char unit) { //if -1: no value found
         switch (Character.toLowerCase(unit)) {
+            case 's':
+                return 1000;
             case 'm':
-                return 60000;
+                return 1000 * 60;
             case 'h':
-                return 3600000;
+                return 1000 * 60 * 60;
             case 'd':
-                return 86400000;
+                return 1000 * 60 * 60 * 24;
+            case 'w':
+                return 1000 * 60 * 60 * 24 * 7;
             default:
                 return -1;
         }
