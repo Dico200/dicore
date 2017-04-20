@@ -8,6 +8,7 @@ import io.dico.dicore.nms.impl.unknown.nbt.NBTMap_UNKNOWN;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
@@ -88,5 +89,15 @@ public class Driver_UNKNOWN implements NDriver {
     public Location generateRandomPosition(Creature creature, int horizontalDistance, int verticalDistance) {
         return creature.getLocation();
     }
-    
+
+    @Override
+    public void sendSoundPacket(Player player, Sound sound, float volume, float pitch) {
+
+    }
+
+    @Override
+    public void sendSoundPacket(Player player, Sound sound, Location location, float volume, float pitch) {
+
+    }
+
 }

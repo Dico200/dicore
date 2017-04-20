@@ -1,22 +1,26 @@
 package io.dico.dicore.nms.impl.v1_8_R3;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import io.dico.dicore.nms.NWorld;
+import io.dico.dicore.nms.Particle;
 import io.dico.dicore.util.Reflection;
-import net.minecraft.server.v1_8_R3.Block;
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.WorldServer;
+import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.Entity;
 
+
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 class World_v1_8_R3 implements NWorld {
+    private static final EnumParticle[] particleValues = EnumParticle.values();
+    private static final Predicate<Entity> playerPredicate = EntityPlayer.class::isInstance;
     private final WorldServer server;
-    private Map<UUID, Entity> entitiesByUUID;
+    private Map<UUID, org.bukkit.entity.Entity> entitiesByUUID;
 
     public World_v1_8_R3(WorldServer server) {
         this.server = server;
@@ -27,16 +31,16 @@ class World_v1_8_R3 implements NWorld {
     }
 
     @Override
-    public Entity getEntity(UUID uuid) {
-        net.minecraft.server.v1_8_R3.Entity result = server.getEntity(uuid);
+    public org.bukkit.entity.Entity getEntity(UUID uuid) {
+        Entity result = server.getEntity(uuid);
         return result == null ? null : result.getBukkitEntity();
     }
 
     @Override
-    public Map<UUID, Entity> getEntitiesByUUID() {
+    public Map<UUID, org.bukkit.entity.Entity> getEntitiesByUUID() {
         if (entitiesByUUID == null) {
-            Map<UUID, net.minecraft.server.v1_8_R3.Entity> map = Reflection.getValueInField(WorldServer.class, "entitiesByUUID", server);
-            entitiesByUUID = Maps.transformValues(map, net.minecraft.server.v1_8_R3.Entity::getBukkitEntity);
+            Map<UUID, Entity> map = Reflection.getValueInField(WorldServer.class, "entitiesByUUID", server);
+            entitiesByUUID = Maps.transformValues(map, Entity::getBukkitEntity);
         }
         return entitiesByUUID;
     }
@@ -51,5 +55,22 @@ class World_v1_8_R3 implements NWorld {
     public void applyPhysics(int x, int y, int z, Material block) {
         server.applyPhysics(new BlockPosition(x, y, z), Block.REGISTRY.a(block.getId()));
     }
-    
+/*
+    public void showParticle(Particle type, float x, float y, float z, float offsetX, float offsetY, float offsetZ, float speed, )
+*/
+    @Override
+    public void showParticle(Particle type, float x, float y, float z, float offsetX, float offsetY, float offsetZ, float speed, int id, int particleCount, double radius) {
+        EnumParticle particle = particleValues[type.ordinal()];
+        Packet packet = new PacketPlayOutWorldParticles(particle, true, x, y, z, offsetX, offsetY, offsetZ, speed, particleCount, id);
+        AxisAlignedBB axisAlignedBB = new AxisAlignedBB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius);
+
+        List<Entity> entities = server.a((Entity) null, axisAlignedBB, playerPredicate);
+
+        for (Entity entity : entities) {
+            EntityPlayer player = (EntityPlayer) entity;
+            player.playerConnection.sendPacket(packet);
+        }
+
+    }
+
 }

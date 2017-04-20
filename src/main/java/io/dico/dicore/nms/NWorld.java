@@ -11,9 +11,11 @@ public interface NWorld {
     Entity getEntity(UUID uuid);
 
     Map<UUID, Entity> getEntitiesByUUID();
-    
+
     void playBlockAction(Material blockType, int x, int y, int z, int tag);
-    
+
     void applyPhysics(int x, int y, int z, Material block);
+
+    void showParticle(Particle type, float x, float y, float z, float offsetX, float offsetY, float offsetZ, float speed, int id, int particleCount, double radius);
 
 }
