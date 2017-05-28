@@ -7,20 +7,16 @@ import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.nms.impl.v1_8_R3.nbt.NBTMap_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
 import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftSound;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftCreature;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Creature;
+import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -93,6 +89,18 @@ public class Driver_v1_8_R3 implements NDriver {
     @Override
     public NWorld getWorld(World world) {
         return worlds.computeIfAbsent(world, World_v1_8_R3::new);
+    }
+    
+    @Override
+    public boolean commenceMobAttack(Monster bukkitMonster, Entity bukkitTarget) {
+        EntityMonster monster = ((CraftMonster) bukkitMonster).getHandle();
+        return monster.r(((CraftEntity) bukkitTarget).getHandle());
+    }
+    
+    @Override
+    public void commencePlayerAttack(Player bukkitPlayer, Entity bukkitTarget) {
+        EntityPlayer player = ((CraftPlayer) bukkitPlayer).getHandle();
+        player.attack(((CraftEntity) bukkitTarget).getHandle());
     }
     
     @Override

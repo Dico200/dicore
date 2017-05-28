@@ -60,6 +60,10 @@ public class Formatting {
         result.append(value, from, max + 1);
         return result.toString();
     }
+    
+    public static String stripFirst(char alternateChar, String value) {
+        
+    }
 
     public static Formatting from(char c) {
         if (isRecognizedChar(c)) {

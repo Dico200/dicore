@@ -10,10 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -58,6 +55,16 @@ public class Driver_UNKNOWN implements NDriver {
             }
         }
         return null;
+    }
+    
+    @Override
+    public boolean commenceMobAttack(Monster monster, Entity target) {
+        return false;
+    }
+    
+    @Override
+    public void commencePlayerAttack(Player player, Entity target) {
+        
     }
     
     @Override

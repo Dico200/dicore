@@ -4,10 +4,7 @@ import io.dico.dicore.nms.impl.unknown.Driver_UNKNOWN;
 import io.dico.dicore.nms.impl.v1_8_R3.Driver_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.*;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -57,6 +54,10 @@ public interface NDriver {
     void sendSoundPacket(Player player, Sound sound, float volume, float pitch);
 
     void sendSoundPacket(Player player, Sound sound, Location location, float volume, float pitch);
+    
+    boolean commenceMobAttack(Monster monster, Entity target);
+    
+    void commencePlayerAttack(Player player, Entity target);
 
     enum Version {
         v1_8_R3,
