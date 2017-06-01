@@ -1,58 +1,71 @@
-package io.dico.dicore.nms.impl.v1_8_R3.nbt;
+package io.dico.dicore.nms.impl.v1_7_R4;
 
 import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import io.dico.dicore.nms.nbt.NBTType;
-import net.minecraft.server.v1_8_R3.NBTTagList;
+import io.dico.dicore.util.Reflection;
+import net.minecraft.server.v1_7_R4.NBTBase;
+import net.minecraft.server.v1_7_R4.NBTTagList;
 
 import java.util.AbstractList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class NBTList_v1_8_R3 extends AbstractList<Object> implements NBTList {
+class NBTListImpl extends AbstractList<Object> implements NBTList {
+    final NBTTagList nbtList;
+    final List<NBTBase> list;
     
-    public final NBTTagList list;
-    
-    public NBTList_v1_8_R3(NBTTagList list) {
-        this.list = list;
+    NBTListImpl(NBTTagList list) {
+        this.nbtList = list;
+        this.list = Reflection.getValueInField(NBTTagList.class, "list", list);
     }
     
-    public NBTList_v1_8_R3() {
+    NBTListImpl() {
         this(new NBTTagList());
     }
     
     @Override
     public Object get(int index) {
-        return Converter_v1_8_R3.fromNMS(list.g(index));
+        if (index >= nbtList.size() || index < 0) {
+            return null;
+        }
+        return list.get(index);
     }
     
     @Override
     public int size() {
-        return list.size();
+        return nbtList.size();
     }
     
     @Override
     public boolean add(Object o) {
-        int size = list.size();
-        list.add(Converter_v1_8_R3.toNMS(o));
-        return list.size() != size;
+        int size = nbtList.size();
+        nbtList.add(ConverterImpl.toNMS(o));
+        return nbtList.size() != size;
     }
     
     @Override
     public Object set(int index, Object element) {
+        if (index >= nbtList.size() || index < 0) {
+            return null;
+        }
         Object previous = get(index);
-        list.a(index, Converter_v1_8_R3.toNMS(element));
+        list.set(index, ConverterImpl.toNMS(element));
         return previous;
     }
     
     @Override
     public Object remove(int index) {
-        return Converter_v1_8_R3.fromNMS(list.a(index));
+        if (index >= nbtList.size() || index < 0) {
+            return null;
+        }
+        return ConverterImpl.fromNMS(list.remove(index));
     }
     
     @Override
     public NBTType getElementType() {
-        return Converter_v1_8_R3.getElementType(list.f());
+        return ConverterImpl.getElementType(nbtList.d());
     }
     
     @Override

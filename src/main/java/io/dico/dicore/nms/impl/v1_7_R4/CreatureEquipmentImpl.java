@@ -1,38 +1,38 @@
-package io.dico.dicore.nms.impl.v1_8_R3;
+package io.dico.dicore.nms.impl.v1_7_R4;
 
 import io.dico.dicore.nms.NCreatureEquipment;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_7_R4.EntityInsentient;
+import net.minecraft.server.v1_7_R4.Item;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftCreature;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftCreature;
+import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemStack;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 
-class CreatureEquipment_v1_8_R3 implements NCreatureEquipment {
+class CreatureEquipmentImpl implements NCreatureEquipment {
 
     private static final ItemStack NOT_SET = new ItemStack(Material.AIR);
 
-    private static ItemStack fromNMS(net.minecraft.server.v1_8_R3.ItemStack item) {
+    private static ItemStack fromNMS(net.minecraft.server.v1_7_R4.ItemStack item) {
         return item == null || Item.getId(item.getItem()) == 0 ? null : CraftItemStack.asCraftMirror(item);
     }
 
-    private static net.minecraft.server.v1_8_R3.ItemStack toNMS(ItemStack item) {
+    private static net.minecraft.server.v1_7_R4.ItemStack toNMS(ItemStack item) {
         return CraftItemStack.asNMSCopy(item);
     }
 
     private final EntityInsentient entity;
     private final ItemStack[] cache = new ItemStack[5];
 
-    public CreatureEquipment_v1_8_R3(EntityInsentient entity) {
+    public CreatureEquipmentImpl(EntityInsentient entity) {
         this.entity = entity;
         refreshCache();
     }
 
-    public CreatureEquipment_v1_8_R3(Creature creature) {
+    public CreatureEquipmentImpl(Creature creature) {
         this(((CraftCreature) creature).getHandle());
     }
 

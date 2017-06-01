@@ -1,14 +1,14 @@
-package io.dico.dicore.nms.impl.v1_8_R3;
+package io.dico.dicore.nms.impl.v1_7_R4;
 
 import io.dico.dicore.nms.NProperties;
-import net.minecraft.server.v1_8_R3.PropertyManager;
+import net.minecraft.server.v1_7_R4.PropertyManager;
 
 import java.io.File;
 
-class Properties_v1_8_R3 implements NProperties {
+class PropertiesImpl implements NProperties {
     private PropertyManager propertyManager;
 
-    public Properties_v1_8_R3(PropertyManager propertyManager) {
+    public PropertiesImpl(PropertyManager propertyManager) {
         this.propertyManager = propertyManager;
     }
 
@@ -34,7 +34,11 @@ class Properties_v1_8_R3 implements NProperties {
 
     @Override
     public long getLong(String key, long absent) {
-        return propertyManager.getLong(key, absent);
+        Object o = propertyManager.properties.get(key);
+        if (o instanceof Number) {
+            return ((Number) o).longValue();
+        }
+        return absent;
     }
 
     @Override

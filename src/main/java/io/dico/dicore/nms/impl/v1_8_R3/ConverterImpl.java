@@ -1,13 +1,13 @@
-package io.dico.dicore.nms.impl.v1_8_R3.nbt;
+package io.dico.dicore.nms.impl.v1_8_R3;
 
 import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import io.dico.dicore.nms.nbt.NBTType;
 import net.minecraft.server.v1_8_R3.*;
 
-public final class Converter_v1_8_R3 {
+final class ConverterImpl {
     
-    private Converter_v1_8_R3() {
+    private ConverterImpl() {
         throw new UnsupportedOperationException();
     }
     
@@ -35,9 +35,9 @@ public final class Converter_v1_8_R3 {
             case 8:
                 return ((NBTTagString) base).a_();
             case 9:
-                return new NBTList_v1_8_R3((NBTTagList) base);
+                return new NBTListImpl((NBTTagList) base);
             case 10:
-                return new NBTMap_v1_8_R3((NBTTagCompound) base);
+                return new NBTMapImpl((NBTTagCompound) base);
             case 11:
                 return ((NBTTagIntArray) base).c();
             default:
@@ -101,16 +101,16 @@ public final class Converter_v1_8_R3 {
                 if (object == NBTList.EMPTY) {
                     return new NBTTagList();
                 }
-                if (object instanceof NBTList_v1_8_R3) {
-                    return ((NBTList_v1_8_R3) object).list;
+                if (object instanceof NBTListImpl) {
+                    return ((NBTListImpl) object).list;
                 }
                 throw new IllegalArgumentException();
             case MAP:
                 if (object == NBTMap.EMPTY) {
                     return new NBTTagCompound();
                 }
-                if (object instanceof NBTMap_v1_8_R3) {
-                    return ((NBTMap_v1_8_R3) object).base;
+                if (object instanceof NBTMapImpl) {
+                    return ((NBTMapImpl) object).base;
                 }
                 throw new IllegalArgumentException();
             default:

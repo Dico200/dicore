@@ -1,6 +1,7 @@
 package io.dico.dicore.nms;
 
 import io.dico.dicore.nms.impl.unknown.Driver_UNKNOWN;
+import io.dico.dicore.nms.impl.v1_7_R4.Driver_v1_7_R4;
 import io.dico.dicore.nms.impl.v1_8_R3.Driver_v1_8_R3;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.*;
@@ -60,6 +61,7 @@ public interface NDriver {
     void commencePlayerAttack(Player player, Entity target);
 
     enum Version {
+        v1_7_R4,
         v1_8_R3,
         UNKNOWN;
 
@@ -87,6 +89,9 @@ public interface NDriver {
             instance = inst;
 
             switch (instance) {
+                case v1_7_R4:
+                    driver = new Driver_v1_7_R4();
+                    break;
                 case v1_8_R3:
                     driver = new Driver_v1_8_R3();
                     break;

@@ -5,7 +5,6 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 
 public class Formatting {
     public static final char FORMAT_CHAR = '\u00a7';
-    private static final char UNDEFINED = '\0';
     private static final TCharObjectMap<Formatting> singleCharInstances = new TCharObjectHashMap<>(16, .5F, '\0');
 
     public static final Formatting
@@ -31,7 +30,7 @@ public class Formatting {
             ITALIC 			= from('o'),
             MAGIC 			= from('k'),
             CLEAR			= from('r'),
-            EMPTY			= from(UNDEFINED);
+            EMPTY			= from('\0');
 
     public static String stripAll(String value) {
         return stripAll(FORMAT_CHAR, value);
@@ -48,21 +47,45 @@ public class Formatting {
         int from = 0;
         do {
             if (isRecognizedChar(value.charAt(index + 1))) {
-                result.append(value, from, index + 2);
-            } else {
                 result.append(value, from, index);
+                from = index + 2;
+            } else {
+                result.append(value, from, from = index + 2);
             }
-
-            from = index + 2;
+            
             index = value.indexOf(alternateChar, index + 1);
-        } while (index != -1 && index != max);
+        } while (index != -1 && index != max && from <= max);
 
-        result.append(value, from, max + 1);
+        if (from <= max) {
+            result.append(value, from, value.length());
+        }
         return result.toString();
     }
     
+    public static String stripFirst(String value) {
+        return stripFirst(FORMAT_CHAR, value);
+    }
+    
     public static String stripFirst(char alternateChar, String value) {
+        int index = value.indexOf(alternateChar);
+        int max;
+        if (index == -1 || index == (max = value.length() - 1)) {
+            return value;
+        }
         
+        StringBuilder result = new StringBuilder(value.length());
+        int from = 0;
+        if (isRecognizedChar(value.charAt(index + 1))) {
+            result.append(value, from, index);
+            from = index + 2;
+        } else {
+            result.append(value, from, from = index + 2);
+        }
+        
+        if (from < max) {
+            result.append(value, from, value.length());
+        }
+        return result.toString();
     }
 
     public static Formatting from(char c) {
@@ -74,11 +97,11 @@ public class Formatting {
             }
             return res;
         }
-        return new Formatting(UNDEFINED);
+        return new Formatting('\0');
     }
     
     public static Formatting from(String chars) {
-        return chars.length() == 1 ? from(chars.charAt(0)) : getFormats(chars, UNDEFINED);
+        return chars.length() == 1 ? from(chars.charAt(0)) : getFormats(chars, '\0');
     }
     
     public static Formatting getFormats(String input) {
@@ -86,36 +109,48 @@ public class Formatting {
     }
     
     public static Formatting getFormats(String input, char formatChar) {
-        boolean needsFormatChar = formatChar != UNDEFINED;
+        return getFormats(input, 0, input.length(), formatChar);
+    }
+    
+    public static Formatting getFormats(String input, int start, int end, char formatChar) {
+        if ((start < 0) || (start > end) || (end > input.length())) {
+            throw new IndexOutOfBoundsException("start " + start + ", end " + end + ", input.length() " + input.length());
+        }
         
+        boolean needsFormatChar = formatChar != '\0';
         char[] formats = new char[6];
         // just make sure it's not the same as formatChar
-        char previous = (formatChar == 'a') ? 'b' : 'a';
+        char previous = (char) (formatChar + 1);
         
-        for (char c : input.toLowerCase().toCharArray()) {
+        for (int i = start; i < end; i++) {
+            char c = input.charAt(i);
+    
             if (previous == formatChar || !needsFormatChar) {
                 if (isColourChar(c) || isResetChar(c)) {
                     formats = new char[6];
-                    formats[0] = c;
+                    formats[0] = Character.toLowerCase(c);
                 } else if (isFormatChar(c)) {
-                    for (int i = 0; i < 6; i++) {
-                        if (formats[i] == UNDEFINED) {
-                            formats[i] = c;
+                    char format = Character.toLowerCase(c);
+                    for (int j = 0; j < 6; j++) {
+                        if (formats[j] == '\0') {
+                            formats[j] = format;
                             break;
-                        } else if (formats[i] == c) {
+                        } else if (formats[j] == format) {
                             break;
                         }
                     }
                 }
             }
+            
             previous = c;
         }
-        return new Formatting(formats);
+        
+        return formats[1] == '\0' ? from(formats[0]) : new Formatting(formats);
     }
     
     public static String translateChars(char alternateChar, String input) {
         char[] result = new char[input.length()];
-        char previous = UNDEFINED;
+        char previous = '\0';
         int i = -1;
         for (char c : input.toCharArray()) {
             if (previous == alternateChar && isRecognizedChar(c)) {
@@ -148,7 +183,7 @@ public class Formatting {
     private Formatting(char[] formats) {
         StringBuilder format = new StringBuilder();
         for (char c : formats) {
-            if (c != UNDEFINED)
+            if (c != '\0')
                 format.append(FORMAT_CHAR).append(c);
             else break;
         }
@@ -156,11 +191,12 @@ public class Formatting {
     }
     
     private Formatting(char c) {
-        this.format = (c != UNDEFINED) ? String.valueOf(FORMAT_CHAR) + c : "";
+        this.format = (c != '\0') ? String.valueOf(FORMAT_CHAR) + c : "";
     }
     
     @Override
     public String toString() {
         return format;
     }
+    
 }

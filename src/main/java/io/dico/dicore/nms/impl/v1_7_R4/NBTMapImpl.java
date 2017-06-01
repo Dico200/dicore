@@ -1,30 +1,30 @@
-package io.dico.dicore.nms.impl.v1_8_R3.nbt;
+package io.dico.dicore.nms.impl.v1_7_R4;
 
 import com.google.common.collect.Maps;
 import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import io.dico.dicore.util.Reflection;
-import net.minecraft.server.v1_8_R3.NBTBase;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_7_R4.NBTBase;
+import net.minecraft.server.v1_7_R4.NBTTagCompound;
 
 import java.util.*;
 import java.util.function.Supplier;
 
-public class NBTMap_v1_8_R3 implements NBTMap {
+class NBTMapImpl implements NBTMap {
     public final NBTTagCompound base;
     private final Map<String, Object> map;
     
-    public NBTMap_v1_8_R3(NBTTagCompound base) {
+    public NBTMapImpl(NBTTagCompound base) {
         this.base = Objects.requireNonNull(base);
         Map<String, NBTBase> map = Reflection.getValueInField(NBTTagCompound.class, "map", base);
         if (map == null) {
             map = new HashMap<>();
             Reflection.setValueInField(NBTTagCompound.class, "map", base, map);
         }
-        this.map = Maps.transformValues(map, Converter_v1_8_R3::fromNMS);
+        this.map = Maps.transformValues(map, ConverterImpl::fromNMS);
     }
     
-    public NBTMap_v1_8_R3() {
+    public NBTMapImpl() {
         this(new NBTTagCompound());
     }
     
@@ -56,7 +56,7 @@ public class NBTMap_v1_8_R3 implements NBTMap {
     @Override
     public Object put(String key, Object value) {
         Object previous = get(key);
-        base.set(key, Converter_v1_8_R3.toNMS(value));
+        base.set(key, ConverterImpl.toNMS(value));
         return previous;
     }
     
@@ -105,7 +105,7 @@ public class NBTMap_v1_8_R3 implements NBTMap {
         } catch (ClassCastException ignored) {
         }
         try {
-            return new NBTMap_v1_8_R3((NBTTagCompound) result);
+            return new NBTMapImpl((NBTTagCompound) result);
         } catch (ClassCastException ignored) {
         }
         return absent;

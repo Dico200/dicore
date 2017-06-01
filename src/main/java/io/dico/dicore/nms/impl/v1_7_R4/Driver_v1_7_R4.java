@@ -1,18 +1,18 @@
-package io.dico.dicore.nms.impl.v1_8_R3;
+package io.dico.dicore.nms.impl.v1_7_R4;
 
 import io.dico.dicore.nms.NCreatureEquipment;
 import io.dico.dicore.nms.NDriver;
 import io.dico.dicore.nms.NServer;
 import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.nms.nbt.NBTMap;
-import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_7_R4.*;
+import net.minecraft.server.v1_7_R4.Item;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftSound;
-import org.bukkit.craftbukkit.v1_8_R3.entity.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_7_R4.CraftSound;
+import org.bukkit.craftbukkit.v1_7_R4.entity.*;
+import org.bukkit.craftbukkit.v1_7_R4.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public class Driver_v1_8_R3 implements NDriver {
+public class Driver_v1_7_R4 implements NDriver {
     private final NServer server = new ServerImpl();
     private final Map<org.bukkit.World, NWorld> worlds = new HashMap<>();
 
@@ -34,7 +34,7 @@ public class Driver_v1_8_R3 implements NDriver {
 
     @Override
     public ItemStack exploreNBT(ItemStack item, Predicate<NBTMap> consumer) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_7_R4.ItemStack nms = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nms.getTag();
         if (tag == null) {
             tag = new NBTTagCompound();
@@ -54,7 +54,7 @@ public class Driver_v1_8_R3 implements NDriver {
     
     @Override
     public ItemStack setNBT(ItemStack item, NBTMap map) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_7_R4.ItemStack nms = CraftItemStack.asNMSCopy(item);
         nms.setTag(((NBTMapImpl) map).base);
         return CraftItemStack.asCraftMirror(nms);
     }
@@ -77,11 +77,11 @@ public class Driver_v1_8_R3 implements NDriver {
     
     @Override
     public PotionEffect getActiveEffect(LivingEntity entity, PotionEffectType type) {
-        MobEffect active = ((CraftLivingEntity) entity).getHandle().effects.get(type.getId());
+        MobEffect active = (MobEffect) ((CraftLivingEntity) entity).getHandle().effects.get(type.getId());
         if (active == null) {
             return null;
         }
-        return new PotionEffect(type, active.getDuration(), active.getAmplifier(), active.isAmbient(), active.isShowParticles());
+        return new PotionEffect(type, active.getDuration(), active.getAmplifier(), active.isAmbient());
     }
     
     @Override
@@ -92,7 +92,7 @@ public class Driver_v1_8_R3 implements NDriver {
     @Override
     public boolean commenceMobAttack(Monster bukkitMonster, Entity bukkitTarget) {
         EntityMonster monster = ((CraftMonster) bukkitMonster).getHandle();
-        return monster.r(((CraftEntity) bukkitTarget).getHandle());
+        return monster.n(((CraftEntity) bukkitTarget).getHandle());
     }
     
     @Override

@@ -1,17 +1,17 @@
-package io.dico.dicore.nms.impl.v1_8_R3;
+package io.dico.dicore.nms.impl.v1_7_R4;
 
 import io.dico.dicore.nms.NProperties;
 import io.dico.dicore.nms.NServer;
 import io.dico.dicore.util.Reflection;
-import net.minecraft.server.v1_8_R3.DedicatedServer;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_7_R4.DedicatedServer;
+import net.minecraft.server.v1_7_R4.MinecraftServer;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_7_R4.CraftServer;
 
-class Server_v1_8_R3 implements NServer {
+class ServerImpl implements NServer {
     private final DedicatedServer mserver = (DedicatedServer) MinecraftServer.getServer();
     private final CraftServer bserver = mserver.server;
-    private final NProperties properties = new Properties_v1_8_R3(mserver.propertyManager);
+    private final NProperties properties = new PropertiesImpl(mserver.propertyManager);
 
     @Override
     public int getCurrentTick() {

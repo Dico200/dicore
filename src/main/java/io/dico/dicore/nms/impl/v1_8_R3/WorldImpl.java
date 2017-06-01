@@ -16,17 +16,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-class World_v1_8_R3 implements NWorld {
+class WorldImpl implements NWorld {
     private static final EnumParticle[] particleValues = EnumParticle.values();
     private static final Predicate<Entity> playerPredicate = EntityPlayer.class::isInstance;
     private final WorldServer server;
     private Map<UUID, org.bukkit.entity.Entity> entitiesByUUID;
 
-    public World_v1_8_R3(WorldServer server) {
+    public WorldImpl(WorldServer server) {
         this.server = server;
     }
 
-    public World_v1_8_R3(World world) {
+    public WorldImpl(World world) {
         this(((CraftWorld) world).getHandle());
     }
 
