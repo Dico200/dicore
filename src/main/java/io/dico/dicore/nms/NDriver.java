@@ -3,6 +3,7 @@ package io.dico.dicore.nms;
 import io.dico.dicore.nms.impl.unknown.Driver_UNKNOWN;
 import io.dico.dicore.nms.impl.v1_7_R4.Driver_v1_7_R4;
 import io.dico.dicore.nms.impl.v1_8_R3.Driver_v1_8_R3;
+import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -29,6 +30,10 @@ public interface NDriver {
     NServer getServer();
 
     ItemStack exploreNBT(ItemStack item, Predicate<NBTMap> changed);
+    
+    NBTList newNbtList();
+    
+    NBTMap newNbtMap();
     
     NBTMap getNBT(ItemStack item);
     

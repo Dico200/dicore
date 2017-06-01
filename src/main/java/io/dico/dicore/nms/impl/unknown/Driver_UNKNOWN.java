@@ -5,6 +5,7 @@ import io.dico.dicore.nms.NDriver;
 import io.dico.dicore.nms.NServer;
 import io.dico.dicore.nms.NWorld;
 import io.dico.dicore.nms.impl.unknown.nbt.NBTMap_UNKNOWN;
+import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,7 +21,17 @@ import java.util.function.Predicate;
 public class Driver_UNKNOWN implements NDriver {
     final NServer server = new Server_UNKNOWN();
     final NWorld world = new World_UNKNOWN();
-
+    
+    @Override
+    public NBTList newNbtList() {
+        return NBTList.EMPTY;
+    }
+    
+    @Override
+    public NBTMap newNbtMap() {
+        return NBTMap.EMPTY;
+    }
+    
     @Override
     public NServer getServer() {
         return server;

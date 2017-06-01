@@ -4,6 +4,7 @@ import io.dico.dicore.nms.NCreatureEquipment;
 import io.dico.dicore.nms.NDriver;
 import io.dico.dicore.nms.NServer;
 import io.dico.dicore.nms.NWorld;
+import io.dico.dicore.nms.nbt.NBTList;
 import io.dico.dicore.nms.nbt.NBTMap;
 import net.minecraft.server.v1_8_R3.*;
 import net.minecraft.server.v1_8_R3.Item;
@@ -31,7 +32,17 @@ public class Driver_v1_8_R3 implements NDriver {
     public NServer getServer() {
         return server;
     }
-
+    
+    @Override
+    public NBTList newNbtList() {
+        return new NBTListImpl();
+    }
+    
+    @Override
+    public NBTMap newNbtMap() {
+        return new NBTMapImpl();
+    }
+    
     @Override
     public ItemStack exploreNBT(ItemStack item, Predicate<NBTMap> consumer) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);

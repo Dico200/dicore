@@ -1,10 +1,6 @@
 package io.dico.dicore.nms.nbt;
 
 import io.dico.dicore.nms.NDriver;
-import io.dico.dicore.nms.impl.v1_8_R3.NBTListImpl;
-import io.dico.dicore.nms.impl.v1_8_R3.NBTMapImpl;
-import io.dico.dicore.nms.impl.unknown.nbt.NBTList_UNKNOWN;
-import io.dico.dicore.nms.impl.unknown.nbt.NBTMap_UNKNOWN;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,16 +16,18 @@ public enum NBTType {
     STRING(String.class),
     BYTE_ARRAY(byte[].class),
     INT_ARRAY(int[].class),
-    LIST(nbtListClass()),
-    MAP(nbtMapClass());
+    LIST(NBTList.class),
+    MAP(NBTMap.class);
     
     public static NBTType valueOf(Class<?> clazz) {
         NBTType result = map.get(clazz);
         if (result == null) {
-            if (clazz == NBTMap.class) {
+            if (NBTMap.class.isAssignableFrom(clazz)) {
+                map.put(clazz, MAP);
                 return MAP;
             }
-            if (clazz == NBTList.class) {
+            if (NBTList.class.isAssignableFrom(clazz)) {
+                map.put(clazz, LIST);
                 return LIST;
             }
             throw new IllegalArgumentException();
@@ -38,12 +36,7 @@ public enum NBTType {
     }
     
     public static NBTList newNBTList() {
-        switch (NDriver.Version.getInstance()) {
-            case v1_8_R3:
-                return new NBTListImpl();
-            default:
-                return new NBTList_UNKNOWN();
-        }
+        return NDriver.getInstance().newNbtList();
     }
     
     public static NBTList newNBTList(Collection<Object> list) {
@@ -53,36 +46,13 @@ public enum NBTType {
     }
     
     public static NBTMap newNBTMap() {
-        switch (NDriver.Version.getInstance()) {
-            case v1_8_R3:
-                return new NBTMapImpl();
-            default:
-                return new NBTMap_UNKNOWN();
-        }
+        return NDriver.getInstance().newNbtMap();
     }
     
     public static NBTMap newNBTMap(Map<String, Object> map) {
         NBTMap result = newNBTMap();
         result.putAll(map);
         return result;
-    }
-    
-    private static Class<? extends NBTMap> nbtMapClass() {
-        switch (NDriver.Version.getInstance()) {
-            case v1_8_R3:
-                return NBTMapImpl.class;
-            default:
-                return NBTMap_UNKNOWN.class;
-        }
-    }
-    
-    private static Class<? extends NBTList> nbtListClass() {
-        switch (NDriver.Version.getInstance()) {
-            case v1_8_R3:
-                return NBTListImpl.class;
-            default:
-                return NBTList_UNKNOWN.class;
-        }
     }
     
     private static Map<Class<?>, NBTType> map;
