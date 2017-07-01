@@ -13,8 +13,8 @@ public class GuiDriver {
     private Map<InventoryView, Gui> openGuis = new HashMap<>();
     
     public GuiDriver(Registrator registrator) {
-        registrator.registerListener(InventoryCloseEvent.class, EventPriority.HIGHEST, true, this::onInventoryClose);
-        registrator.registerListener(InventoryClickEvent.class, EventPriority.HIGHEST, true, this::onInventoryClick);
+        registrator.registerListener(InventoryCloseEvent.class, EventPriority.HIGHEST, false, this::onInventoryClose);
+        registrator.registerListener(InventoryClickEvent.class, EventPriority.HIGHEST, false, this::onInventoryClick);
     }
     
     public void guiOpened(Gui gui) {

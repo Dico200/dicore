@@ -109,6 +109,29 @@ public class ItemProperties implements JsonLoadable {
         writer.endObject();
     }
     
+    public void writeTo(Map<String, Object> map) {
+        map.put("id", id + "");
+        map.put("data", data + "");
+        map.put("amount", amount + "");
+        if (displayName != null) {
+            map.put("displayName", displayName);
+        }
+        if (enchantments != null) {
+            Map<Enchantment, Integer> enchantments = this.enchantments;
+            Map<String, Integer> stringKeys = new HashMap<>();
+            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+                stringKeys.put(entry.getKey().getName(), entry.getValue());
+            }
+            map.put("enchantments", stringKeys);
+        }
+        if (lore != null) {
+            map.put("lore", lore);
+        }
+        if (unbreakable) {
+            map.put("unbreakable", true);
+        }
+    }
+    
     @Override
     @SuppressWarnings("unchecked")
     public void loadFrom(JsonReader reader) throws IOException {
@@ -156,6 +179,52 @@ public class ItemProperties implements JsonLoadable {
             }
         }
         reader.endObject();
+    }
+    
+    public ItemProperties loadFrom(Map<String, Object> map) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            final String key = entry.getKey();
+            switch (key) {
+                case "id":
+                    id = Integer.parseInt((String) entry.getValue());
+                    break;
+                case "data":
+                    data = Byte.parseByte((String) entry.getValue());
+                    break;
+                case "amount":
+                    amount = Integer.parseInt((String) entry.getValue());
+                    break;
+                case "unbreakable":
+                    unbreakable = (boolean) entry.getValue();
+                    break;
+                case "enchantments": {
+                    if (enchantments == null) {
+                        enchantments = new HashMap<>();
+                    } else if (!enchantments.isEmpty()) {
+                        enchantments.clear();
+                    }
+                    //noinspection unchecked
+                    Map<String, Integer> stringKeys = (Map<String, Integer>) entry.getValue();
+                    if (stringKeys != null) {
+                        for (Map.Entry<String, Integer> entry2 : stringKeys.entrySet()) {
+                            Enchantment ench = Enchantment.getByName(entry2.getKey());
+                            if (ench != null) {
+                                enchantments.put(ench, entry2.getValue());
+                            }
+                        }
+                    }
+                    break;
+                }
+                case "lore":
+                    //noinspection unchecked
+                    lore = (List<String>) entry.getValue();
+                    break;
+                case "displayName":
+                    displayName = (String) entry.getValue();
+                default:
+            }
+        }
+        return this;
     }
     
     public int getId() {
